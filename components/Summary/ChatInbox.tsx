@@ -18,6 +18,7 @@ import {
   User,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { Conversation, Message } from "./Sidebar";
 
 interface ChatInboxProps {
@@ -236,6 +237,10 @@ const ChatInbox = ({
                           ))}
                         </ul>
                       </div>
+                    </div>
+                  ) : isAI ? (
+                    <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:text-indigo-700 dark:prose-headings:text-indigo-300 prose-headings:text-base prose-headings:font-bold prose-p:leading-relaxed prose-li:leading-relaxed prose-strong:text-indigo-600 dark:prose-strong:text-indigo-400 prose-ul:my-1 prose-ol:my-1 prose-p:my-1.5">
+                      <ReactMarkdown>{message.text}</ReactMarkdown>
                     </div>
                   ) : (
                     <p className="text-sm whitespace-pre-line leading-relaxed">

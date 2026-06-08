@@ -11,7 +11,7 @@ const initialConversations: Conversation[] = [
     fileName: "intro_to_ai_ch1.pdf",
     fileSize: "2.4 MB",
     time: "Just now",
-    active: true,
+    active: false,
     summaryPreview: "This document provides an overview of AI history...",
   },
   {
@@ -103,6 +103,84 @@ const SummaryWrapper = () => {
   );
   const [messages, setMessages] = useState<Message[]>(initialMessages);
 
+  // Load custom conversations from localStorage on mount
+  useEffect(() => {
+    try {
+      const storedConvs = JSON.parse(
+        localStorage.getItem("custom_conversations") || "[]"
+      ) as Conversation[];
+
+      if (storedConvs.length > 0) {
+        // Merge: custom conversations first, then mock conversations
+        const mergedConvs = [...storedConvs, ...initialConversations];
+
+        // Check if there's an active_conv_id from a recent upload
+        const activeId = localStorage.getItem("active_conv_id");
+        if (activeId) {
+          // Mark the newly uploaded conversation as active
+          const updatedConvs = mergedConvs.map((c) => ({
+            ...c,
+            active: c.id === activeId,
+          }));
+          setConversations(updatedConvs);
+
+          const targetConv = updatedConvs.find((c) => c.id === activeId);
+          if (targetConv) {
+            setActiveConv(targetConv);
+
+            // Load its messages from localStorage
+            const messagesMap = JSON.parse(
+              localStorage.getItem("custom_messages_map") || "{}"
+            );
+            if (messagesMap[activeId]) {
+              setMessages(messagesMap[activeId]);
+            }
+          }
+          // Clear active_conv_id so it doesn't re-trigger on refresh
+          localStorage.removeItem("active_conv_id");
+        } else {
+          // No recent upload, just merge and set first as active
+          const updatedConvs = mergedConvs.map((c, idx) => ({
+            ...c,
+            active: idx === 0,
+          }));
+          setConversations(updatedConvs);
+          setActiveConv(updatedConvs[0]);
+
+          // Load messages for the first conversation
+          if (updatedConvs[0].id.startsWith("custom_")) {
+            const messagesMap = JSON.parse(
+              localStorage.getItem("custom_messages_map") || "{}"
+            );
+            if (messagesMap[updatedConvs[0].id]) {
+              setMessages(messagesMap[updatedConvs[0].id]);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Error loading custom conversations:", e);
+    }
+  }, []);
+
+  // Persist messages to localStorage whenever they change for custom conversations
+  useEffect(() => {
+    if (activeConv.id.startsWith("custom_")) {
+      try {
+        const messagesMap = JSON.parse(
+          localStorage.getItem("custom_messages_map") || "{}"
+        );
+        messagesMap[activeConv.id] = messages;
+        localStorage.setItem(
+          "custom_messages_map",
+          JSON.stringify(messagesMap)
+        );
+      } catch (e) {
+        console.error("Error persisting messages:", e);
+      }
+    }
+  }, [messages, activeConv.id]);
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
@@ -125,10 +203,21 @@ const SummaryWrapper = () => {
     );
     setActiveConv(conv);
 
-    // Set mockup message based on selected conversation
-    if (conv.id === "1") {
+    // Check if this is a custom conversation (from localStorage)
+    if (conv.id.startsWith("custom_")) {
+      const messagesMap = JSON.parse(
+        localStorage.getItem("custom_messages_map") || "{}"
+      );
+      if (messagesMap[conv.id]) {
+        setMessages(messagesMap[conv.id]);
+      } else {
+        setMessages([]);
+      }
+    } else if (conv.id === "1") {
+      // Mock conversation 1
       setMessages(initialMessages);
     } else {
+      // Other mock conversations
       setMessages([
         {
           id: "m_other_1",
@@ -181,3 +270,4 @@ const SummaryWrapper = () => {
 };
 
 export default SummaryWrapper;
+
