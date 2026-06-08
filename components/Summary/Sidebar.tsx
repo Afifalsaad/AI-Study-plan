@@ -35,9 +35,10 @@ export interface Message {
 
 interface SidebarProps {
   sidebarOpen: boolean;
+  loading: boolean;
   setSidebarOpen: (open: boolean) => void;
   conversations: Conversation[];
-  activeConv: Conversation;
+  activeConv: Conversation | null;
   onSelectConv: (conv: Conversation) => void;
 }
 
@@ -46,18 +47,18 @@ const Sidebar = ({
   setSidebarOpen,
   conversations,
   onSelectConv,
+  loading,
 }: SidebarProps) => {
   return (
     <>
-      {/* Backdrop for mobile */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-40 md:hidden transition-opacity duration-300"
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
       <aside
-        className={`fixed md:static top-16 bottom-0 left-0 border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900 flex flex-col transition-all duration-300 z-50 shrink-0 ${
+        className={`fixed md:static top-16 bottom-0 left-0 border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900 flex flex-col duration-700 ease-in-out z-50 shrink-0 ${
           sidebarOpen
             ? "translate-x-0 w-72 sm:w-80 border-r opacity-100"
             : "-translate-x-full md:translate-x-0 md:w-20 md:border-r"
@@ -111,59 +112,68 @@ const Sidebar = ({
         )}
 
         {/* Conversation List */}
-        <div className="flex-1 overflow-y-auto space-y-2 p-2 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
-          {conversations.map((conv) => (
-            <div
-              key={conv.id}
-              onClick={() => {
-                onSelectConv(conv);
-                // Auto close sidebar on mobile after choosing a conversation
-                if (window.innerWidth < 768) {
-                  setSidebarOpen(false);
-                }
-              }}
-              className={`p-3 rounded-xl cursor-pointer transition-all flex items-center gap-3 group relative ${
-                sidebarOpen ? "justify-start" : "justify-center"
-              } ${
-                conv.active
-                  ? "bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-100/50 dark:border-indigo-900/30"
-                  : "hover:bg-slate-100/70 dark:hover:bg-slate-800/40 border border-transparent"
-              }`}
-              title={!sidebarOpen ? conv.title : undefined}>
+        {loading ? (
+          <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-50 dark:bg-gray-900">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+            <p className="mt-4 text-sm font-medium text-gray-500 dark:text-gray-400 animate-pulse">
+              Conversations loading...
+            </p>
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto space-y-2 p-2 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
+            {conversations.map((conv) => (
               <div
-                className={`p-2.5 rounded-lg shrink-0 ${
+                key={conv.id}
+                onClick={() => {
+                  onSelectConv(conv);
+                  // Auto close sidebar on mobile after choosing a conversation
+                  if (window.innerWidth < 768) {
+                    setSidebarOpen(false);
+                  }
+                }}
+                className={`p-3 rounded-xl cursor-pointer transition-all flex items-center gap-3 group relative ${
+                  sidebarOpen ? "justify-start" : "justify-center"
+                } ${
                   conv.active
-                    ? "bg-indigo-600 text-white"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-950/30 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
-                } transition-colors`}>
-                <FileText className="w-5 h-5" />
-              </div>
-              {sidebarOpen && (
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-0.5">
-                    <h3
-                      className={`font-semibold text-sm truncate ${
-                        conv.active
-                          ? "text-indigo-950 dark:text-white"
-                          : "text-slate-700 dark:text-slate-300"
-                      }`}>
-                      {conv.title}
-                    </h3>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 shrink-0 ml-1">
-                      {conv.time}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 truncate mb-1">
-                    {conv.fileName} ({conv.fileSize})
-                  </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate line-clamp-1">
-                    {conv.summaryPreview}
-                  </p>
+                    ? "bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-100/50 dark:border-indigo-900/30"
+                    : "hover:bg-slate-100/70 dark:hover:bg-slate-800/40 border border-transparent"
+                }`}
+                title={!sidebarOpen ? conv.title : undefined}>
+                <div
+                  className={`p-2.5 rounded-lg shrink-0 ${
+                    conv.active
+                      ? "bg-indigo-600 text-white"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-950/30 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
+                  } transition-colors`}>
+                  <FileText className="w-5 h-5" />
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
+                {sidebarOpen && (
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-0.5">
+                      <h3
+                        className={`font-semibold text-sm truncate ${
+                          conv.active
+                            ? "text-indigo-950 dark:text-white"
+                            : "text-slate-700 dark:text-slate-300"
+                        }`}>
+                        {conv.title}
+                      </h3>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 shrink-0 ml-1">
+                        {conv.time}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 truncate mb-1">
+                      {conv.fileName} ({conv.fileSize})
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate line-clamp-1">
+                      {conv.summaryPreview}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Sidebar Footer */}
         <div

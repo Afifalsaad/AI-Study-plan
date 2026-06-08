@@ -6,7 +6,8 @@ import { ThemeProvider } from "../components/ThemeProvider";
 
 export const metadata: Metadata = {
   title: "StudyAI - AI-Powered Study Assistant",
-  description: "Make your study smarter and easier with an AI assistant. Summaries, flashcards, study plans, and much more.",
+  description:
+    "Make your study smarter and easier with an AI assistant. Summaries, flashcards, study plans, and much more.",
 };
 
 export default function RootLayout({
@@ -18,8 +19,26 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("h-full", "antialiased")}
-    >
+      className={cn("h-full", "antialiased")}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme');
+                  if (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    theme = 'dark';
+                  }
+                  if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
           <Navbar></Navbar>

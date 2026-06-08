@@ -1,12 +1,12 @@
 "use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
 
 const Navbar = () => {
   return (
-    <nav className="border-b border-border bg-white/70 dark:bg-gray-950/70 backdrop-blur-md sticky top-0 z-50 transition-colors duration-300">
+    <nav className="border-b border-border bg-white/80 dark:bg-slate-950 backdrop-blur-md sticky top-0 z-50 transition-colors duration-700 ease-in-out">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
@@ -18,15 +18,33 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600 dark:text-gray-300">
-          <Link href="#features" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Features</Link>
-          <Link href="#how-it-works" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">How it works</Link>
-          <Link href="#pricing" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Pricing</Link>
+          <Link
+            href="#features"
+            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+            Features
+          </Link>
+          <Link
+            href="#how-it-works"
+            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+            How it works
+          </Link>
+          <Link
+            href="#pricing"
+            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+            Pricing
+          </Link>
         </div>
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <Button variant="ghost" className="dark:text-gray-300 dark:hover:text-white">Login</Button>
-          <Button className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">Get Started</Button>
+          <Button
+            variant="ghost"
+            className="dark:text-gray-300 dark:hover:text-white">
+            Login
+          </Button>
+          <Button className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">
+            Get Started
+          </Button>
         </div>
       </div>
     </nav>

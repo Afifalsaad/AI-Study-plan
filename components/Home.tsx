@@ -51,31 +51,31 @@ export default function Home() {
   ];
 
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-gray-950 transition-colors duration-300">
+    <main className="min-h-screen bg-slate-50 dark:bg-gray-950 transition-colors duration-700 ease-in-out">
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-6 transition-colors duration-300">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-6 transition-colors duration-700">
             Make Your Study{" "}
             <span className="text-indigo-600 dark:text-indigo-400">
               Smarter
             </span>{" "}
             and Easier
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-10 transition-colors duration-300">
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-10 transition-colors duration-700">
             Our AI assistant reads your notes, simplifies complex topics, and
             prepares you for exams in the shortest time possible.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
-              className="text-lg px-8 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition-colors duration-300">
+              className="text-lg px-8 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition-colors duration-700">
               Start for Free
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="text-lg px-8 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors duration-300">
+              className="text-lg px-8 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors duration-700">
               See How It Works
             </Button>
           </div>
@@ -86,10 +86,10 @@ export default function Home() {
       {/* Features Section */}
       <section id="features" className="container mx-auto px-4 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-300">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-700">
             Our Special Features
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 transition-colors duration-300">
+          <p className="text-gray-600 dark:text-gray-400 transition-colors duration-700">
             Everything you need in one place to supercharge your learning
             journey
           </p>
@@ -99,15 +99,15 @@ export default function Home() {
           {features.map((feature, index) => (
             <Card
               key={index}
-              className={`border-none shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-indigo-500/5 bg-linear-to-br ${feature.gradient} backdrop-blur-sm transition-all duration-300 hover:-translate-y-1`}>
+              className={`border-none shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-indigo-500/5 bg-linear-to-br ${feature.gradient} backdrop-blur-sm transition-all duration-700 hover:-translate-y-1`}>
               <CardHeader>
-                <div className="mb-4 w-14 h-14 rounded-xl bg-white/80 dark:bg-gray-800/80 flex items-center justify-center shadow-sm transition-colors duration-300">
+                <div className="mb-4 w-14 h-14 rounded-xl bg-white/80 dark:bg-gray-800/80 flex items-center justify-center shadow-sm transition-colors duration-700">
                   {feature.icon}
                 </div>
-                <CardTitle className="text-xl text-gray-900 dark:text-white transition-colors duration-300">
+                <CardTitle className="text-xl text-gray-900 dark:text-white transition-colors duration-700">
                   {feature.title}
                 </CardTitle>
-                <CardDescription className="text-gray-500 dark:text-gray-400 pt-2 transition-colors duration-300">
+                <CardDescription className="text-gray-500 dark:text-gray-400 pt-2 transition-colors duration-700">
                   {feature.description}
                 </CardDescription>
               </CardHeader>
@@ -117,7 +117,7 @@ export default function Home() {
       </section>
 
       {/* Footer CTA */}
-      <section className="bg-indigo-600 dark:bg-indigo-900/50 py-16 mt-12 transition-colors duration-300">
+      <section className="bg-indigo-600 dark:bg-indigo-900/50 py-16 mt-12 transition-colors duration-700">
         <div className="container mx-auto px-4 text-center text-white">
           <h2 className="text-3xl font-bold mb-6">
             Join Today and Ace Your Preparation
@@ -129,7 +129,7 @@ export default function Home() {
           <Button
             size="lg"
             variant="secondary"
-            className="bg-white text-indigo-600 hover:bg-indigo-50 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 dark:border dark:border-white/20 transition-colors duration-300">
+            className="bg-white text-indigo-600 hover:bg-indigo-50 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 dark:border dark:border-white/20 transition-colors duration-700">
             Get Started Now
           </Button>
         </div>

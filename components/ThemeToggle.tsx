@@ -11,7 +11,7 @@ export default function ThemeToggle() {
       id="theme-toggle-btn"
       onClick={toggleTheme}
       aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-      className="relative group flex items-center justify-center w-10 h-10 rounded-xl dark:shadow-indigo-500/10 transition-all duration-300 ease-in-out cursor-pointer">
+      className="relative group flex items-center justify-center w-10 h-10 rounded-xl dark:shadow-indigo-500/10 transition-all duration-500 ease-in-out cursor-pointer">
       {/* Sun Icon */}
       <Sun
         className={`absolute w-5 h-5 text-indigo-500 transition-all duration-500 ease-in-out

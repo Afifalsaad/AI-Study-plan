@@ -87,10 +87,12 @@ const Pdf = () => {
 
         setLoading(false);
         router.push("/Summary");
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Error uploading PDF:", error);
         setLoading(false);
-        alert("Failed to summarize PDF: " + error.message);
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error occurred";
+        alert("Failed to summarize PDF: " + errorMessage);
       }
     } else {
       alert("Please upload one PDF file");
@@ -147,7 +149,7 @@ const Pdf = () => {
           onDragLeave={handleDrag}
           onDrop={handleDrop}
           onClick={onButtonClick}
-          className={`aspect-video bg-linear-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-2xl border-4 shadow-2xl flex flex-col items-center justify-center overflow-hidden transition-all duration-300 cursor-pointer group
+          className={`aspect-video bg-linear-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-2xl border-4 shadow-2xl flex flex-col items-center justify-center overflow-hidden transition-all duration-700 ease-in-out cursor-pointer group
       ${
         isDragActive || isUploaded
           ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20 scale-[1.01]"
@@ -163,7 +165,7 @@ const Pdf = () => {
             </div>
           ) : (
             <div className="flex flex-col items-center space-y-4 p-6 text-center">
-              <div className="p-4 bg-white/80 dark:bg-gray-800 rounded-full shadow-md text-indigo-500 group-hover:scale-110 transition-transform duration-300">
+              <div className="p-4 bg-white/80 dark:bg-gray-800 rounded-full shadow-md text-indigo-500 group-hover:scale-110 transition-transform duration-700 ease-in-out">
                 <CloudDownload></CloudDownload>
               </div>
               {/* Texts */}

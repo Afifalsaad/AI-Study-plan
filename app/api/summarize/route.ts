@@ -37,10 +37,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       summary: response.text || "Failed to generate summary.",
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error summarizing PDF:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to summarize PDF";
     return NextResponse.json(
-      { error: error.message || "Failed to summarize PDF" },
+      { error: errorMessage },
       { status: 500 }
     );
   }
