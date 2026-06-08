@@ -1,22 +1,34 @@
 "use client";
+import { CloudDownload } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 
 const Pdf = () => {
   const [fileName, setFileName] = useState<string | null>(null);
+  const [isUploaded, setIsUploaded] = useState<boolean | null>(false);
+  const [loading, setLoading] = useState<boolean | null>(false);
   const [isDragActive, setIsDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
-  // ফাইল হ্যান্ডেল করার ফাংশন
   const handleFile = (file: File) => {
     if (file && file.type === "application/pdf") {
       setFileName(file.name);
+      setIsUploaded(true);
+      setLoading(true);
+
+      setTimeout(() => {
+        setLoading(false);
+        setIsUploaded(true);
+        setFileName(file.name);
+        router.push("/Summary");
+      }, 3000);
       // এখানে আপনার ব্যাকএন্ডে ফাইল পাঠানোর কোড লিখতে পারেন
     } else {
       alert("Please upload one PDF file");
     }
   };
 
-  // ড্রপজোনে ফাইল ড্র্যাগ করলে
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -27,7 +39,6 @@ const Pdf = () => {
     }
   };
 
-  // ফাইল ড্রপ করলে
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -38,7 +49,6 @@ const Pdf = () => {
     }
   };
 
-  // ইনপুট ক্লিক করে ফাইল সিলেক্ট করলে
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     if (e.target.files && e.target.files[0]) {
@@ -49,6 +59,7 @@ const Pdf = () => {
   const onButtonClick = () => {
     fileInputRef.current?.click();
   };
+
   return (
     <div className="mt-16 relative mx-auto max-w-5xl">
       {/* Hidden File Input */}
@@ -69,42 +80,39 @@ const Pdf = () => {
         onClick={onButtonClick}
         className={`aspect-video bg-linear-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-2xl border-4 shadow-2xl flex flex-col items-center justify-center overflow-hidden transition-all duration-300 cursor-pointer group
       ${
-        isDragActive
+        isDragActive || isUploaded
           ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20 scale-[1.01]"
           : "border-white dark:border-gray-800 dark:shadow-indigo-500/10"
       }`}>
-        <div className="flex flex-col items-center space-y-4 p-6 text-center">
-          {/* PDF Icon */}
-          <div className="p-4 bg-white/80 dark:bg-gray-800 rounded-full shadow-md text-indigo-500 group-hover:scale-110 transition-transform duration-300">
-            <svg
-              className="w-10 h-10"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2zM14 3v5a1 1 0 001 1h5"></path>
-            </svg>
+        {loading ? (
+          <div className="flex flex-col items-center space-y-4">
+            {/* Tailwind CSS Spinner */}
+            <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-indigo-600 dark:text-indigo-400 font-semibold text-lg animate-pulse">
+              Uploading your PDF, please wait...
+            </p>
           </div>
-
-          {/* Texts */}
-          <div className="space-y-1">
-            <p className="text-indigo-900 dark:text-indigo-200 font-semibold text-lg">
-              {fileName ? "Selected File:" : "Drag & Drop your PDF here"}
-            </p>
-            <p className="text-indigo-600 dark:text-indigo-400 font-bold text-xl break-all px-4">
-              {fileName ? fileName : "or click to browse"}
-            </p>
-            {!fileName && (
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Supports PDF files up to 10MB
+        ) : (
+          <div className="flex flex-col items-center space-y-4 p-6 text-center">
+            <div className="p-4 bg-white/80 dark:bg-gray-800 rounded-full shadow-md text-indigo-500 group-hover:scale-110 transition-transform duration-300">
+              <CloudDownload></CloudDownload>
+            </div>
+            {/* Texts */}
+            <div className="space-y-1">
+              <p className="text-indigo-900 dark:text-indigo-200 font-semibold text-lg">
+                {fileName ? "Selected File:" : "Drag & Drop your PDF here"}
               </p>
-            )}
+              <p className="text-indigo-600 dark:text-indigo-400 font-bold text-xl break-all px-4">
+                {fileName ? fileName : "or click to browse"}
+              </p>
+              {!fileName && (
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Supports PDF files up to 10MB
+                </p>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

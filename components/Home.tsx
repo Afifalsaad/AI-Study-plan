@@ -80,15 +80,6 @@ export default function Home() {
             </Button>
           </div>
         </div>
-
-        {/* Hero Mockup Image Placeholder */}
-        {/* <div className="mt-16 relative mx-auto max-w-5xl">
-          <div className="aspect-video bg-linear-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-2xl border-4 border-white dark:border-gray-800 shadow-2xl dark:shadow-indigo-500/10 flex items-center justify-center overflow-hidden transition-colors duration-300">
-            <div className="text-indigo-300 dark:text-indigo-500/50 font-bold text-2xl uppercase tracking-widest">
-              Platform Dashboard Preview
-            </div>
-          </div>
-        </div> */}
         <Pdf></Pdf>
       </section>
 
@@ -104,11 +95,11 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
             <Card
               key={index}
-              className={`border-none shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-indigo-500/5 bg-gradient-to-br ${feature.gradient} backdrop-blur-sm transition-all duration-300 hover:-translate-y-1`}>
+              className={`border-none shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-indigo-500/5 bg-linear-to-br ${feature.gradient} backdrop-blur-sm transition-all duration-300 hover:-translate-y-1`}>
               <CardHeader>
                 <div className="mb-4 w-14 h-14 rounded-xl bg-white/80 dark:bg-gray-800/80 flex items-center justify-center shadow-sm transition-colors duration-300">
                   {feature.icon}
@@ -122,7 +113,7 @@ export default function Home() {
               </CardHeader>
             </Card>
           ))}
-        </div>
+        </div> */}
       </section>
 
       {/* Footer CTA */}
