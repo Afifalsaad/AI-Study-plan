@@ -39,9 +39,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
-
-  // Prevent hydration mismatch by rendering children only after mount
-  // but still render the layout structure
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}

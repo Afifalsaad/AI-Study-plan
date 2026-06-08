@@ -23,6 +23,7 @@ const Pdf = () => {
         setFileName(file.name);
         router.push("/Summary");
       }, 3000);
+      console.log("from pdf uploader", file);
       // এখানে আপনার ব্যাকএন্ডে ফাইল পাঠানোর কোড লিখতে পারেন
     } else {
       alert("Please upload one PDF file");
@@ -88,7 +89,7 @@ const Pdf = () => {
           <div className="flex flex-col items-center space-y-4">
             {/* Tailwind CSS Spinner */}
             <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-indigo-600 dark:text-indigo-400 font-semibold text-lg animate-pulse">
+            <p className="text-indigo-600 dark:text-indigo-400 font-semibold text-md">
               Uploading your PDF, please wait...
             </p>
           </div>
