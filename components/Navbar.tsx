@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
+import LoginForm from "./LoginForm";
 
 const Navbar = () => {
   return (
@@ -37,11 +38,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <Button
-            variant="ghost"
-            className="dark:text-gray-300 dark:hover:text-white">
-            Login
-          </Button>
+          <LoginForm></LoginForm>
           <Button className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">
             Get Started
           </Button>
