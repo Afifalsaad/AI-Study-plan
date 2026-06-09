@@ -1,12 +1,17 @@
 "use client";
+import axios from "axios";
 import { CloudDownload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
+import { Progress } from "./ui/progress";
+import { Field, FieldLabel } from "./ui/field";
 
 const Pdf = () => {
   const [fileName, setFileName] = useState<string | null>(null);
   const [isUploaded, setIsUploaded] = useState<boolean | null>(false);
   const [loading, setLoading] = useState<boolean | null>(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(0);
+  const [status, setStatus] = useState<string | null>("");
   const [isDragActive, setIsDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -16,23 +21,33 @@ const Pdf = () => {
       setFileName(file.name);
       setIsUploaded(true);
       setLoading(true);
+      setUploadProgress(0);
+      setStatus("Uploading PDF...");
 
       try {
         const formData = new FormData();
         formData.append("file", file);
 
-        const res = await fetch("/api/summarize", {
-          method: "POST",
-          body: formData,
+        const res = await axios.post("/api/summarize", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          onUploadProgress: (progressEvent) => {
+            const percent = Math.round(
+              (progressEvent.loaded * 100) / (progressEvent.total || file.size)
+            );
+
+            setUploadProgress(percent);
+
+            if (percent === 100) {
+              setStatus("Analyzing PDF...");
+            }
+          },
         });
 
-        if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(errData.error || "Failed to summarize PDF");
-        }
+        setStatus("Generating summary...");
 
-        const data = await res.json();
-        const summaryText = data.summary as string;
+        const summaryText = res.data.summary as string;
 
         // Create a new conversation object
         const newConvId = `custom_${Date.now()}`;
@@ -156,13 +171,13 @@ const Pdf = () => {
           : "border-white dark:border-gray-800 dark:shadow-indigo-500/10"
       }`}>
           {loading ? (
-            <div className="flex flex-col items-center space-y-4">
-              {/* Tailwind CSS Spinner */}
-              <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-indigo-600 dark:text-indigo-400 font-semibold text-md">
-                Uploading your PDF, please wait...
-              </p>
-            </div>
+            <Field className="w-full max-w-sm">
+              <FieldLabel htmlFor="progress-upload">
+                <span>{status}</span>
+                <span className="ml-auto">{uploadProgress}%</span>
+              </FieldLabel>
+              <Progress value={uploadProgress} id="progress-upload" />
+            </Field>
           ) : (
             <div className="flex flex-col items-center space-y-4 p-6 text-center">
               <div className="p-4 bg-white/80 dark:bg-gray-800 rounded-full shadow-md text-indigo-500 group-hover:scale-110 transition-transform duration-700 ease-in-out">
