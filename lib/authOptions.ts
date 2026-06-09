@@ -5,9 +5,18 @@ const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
-      credentials: {},
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
       async authorize(credentials, req) {
-        const userInfo = loginUser(credentials);
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+        const userInfo = await loginUser({
+          email: credentials.email as string,
+          password: credentials.password as string,
+        });
         return userInfo;
       },
     }),

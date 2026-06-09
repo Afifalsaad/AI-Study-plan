@@ -1,8 +1,8 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -13,12 +13,16 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 const LoginForm = () => {
   const session = useSession();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
     const form = new FormData(e.currentTarget);
 
@@ -33,19 +37,28 @@ const LoginForm = () => {
       redirect: false,
     });
 
-    console.log("from login form", session);
+    if (result?.ok) {
+      setTimeout(() => {
+        setIsOpen(false);
+        setLoading(false);
+      }, 1500);
+    }
   };
+  console.log("from login form", session);
 
   return (
     <div>
-      <Dialog>
-        <DialogTrigger asChild>
-          {session?.status === "authenticated" ? (
-            <Button variant="outline">Log Out</Button>
-          ) : (
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        {session?.status === "authenticated" ? (
+          <Button onClick={() => signOut()} variant="outline">
+            Log Out
+          </Button>
+        ) : (
+          <DialogTrigger asChild>
             <Button variant="outline">Login</Button>
-          )}
-        </DialogTrigger>
+          </DialogTrigger>
+        )}
+
         <DialogContent className="sm:max-w-sm">
           <form onSubmit={handleLogin}>
             <DialogHeader className="text-center">
@@ -78,7 +91,7 @@ const LoginForm = () => {
               <Button
                 type="submit"
                 className="bg-indigo-800 hover:bg-indigo-900 hover:cursor-pointer w-full">
-                Login
+                {loading ? "Logging In..." : "Login"}
               </Button>
             </DialogFooter>
           </form>
