@@ -13,58 +13,35 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Swal from "sweetalert2";
+import { registerUser } from "@/actions/server/auth";
 
 const RegisterForm = () => {
   const session = useSession();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
     const form = new FormData(e.currentTarget);
 
     const userInfo = {
+      name: form.get("name"),
       email: form.get("email"),
       password: form.get("password"),
     };
 
-    const result = await signIn("credentials", {
-      email: userInfo.email,
-      password: userInfo.password,
-      redirect: false,
+    const result = await registerUser({
+      name: String(form.get("name")),
+      email: String(form.get("email")),
+      password: String(form.get("password")),
     });
 
-    if (result?.ok) {
-      setTimeout(() => {
-        Swal.fire({
-          icon: "success",
-          title: "Logged In",
-          timer: 1000,
-          showConfirmButton: false,
-        });
-        setIsOpen(false);
-        setLoading(false);
-      }, 1500);
-    } else {
-      setIsOpen(false);
-      setLoading(false);
-      Swal.fire({
-        icon: "error",
-        title: "User Not Found",
-        text: "Email and Password didn't match.",
-        confirmButtonText: "Try Again",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          setIsOpen(true);
-        }
-      });
-    }
+    console.log("from login form", session, userInfo, result);
   };
-  console.log("from login form", session);
 
   return (
     <div>
@@ -73,21 +50,30 @@ const RegisterForm = () => {
           ""
         ) : (
           <DialogTrigger asChild>
-            <Button className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">
+            <Button className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 hover:cursor-pointer">
               Get Started
             </Button>
           </DialogTrigger>
         )}
 
         <DialogContent className="sm:max-w-sm">
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleRegister}>
             <DialogHeader className="text-center">
-              <DialogTitle>Log In</DialogTitle>
+              <DialogTitle>Sign Up!</DialogTitle>
               <DialogDescription>
-                Login to your account for get started.
+                Create a new account to get started.
               </DialogDescription>
             </DialogHeader>
-            <FieldGroup>
+            <FieldGroup className="gap-5">
+              <Field>
+                <Label htmlFor="name-1">Name</Label>
+                <Input
+                  className="h-5"
+                  id="name-1"
+                  name="name"
+                  placeholder="Your name"
+                />
+              </Field>
               <Field>
                 <Label htmlFor="name-1">Email</Label>
                 <Input
@@ -111,7 +97,7 @@ const RegisterForm = () => {
               <Button
                 type="submit"
                 className="bg-indigo-800 hover:bg-indigo-900 hover:cursor-pointer w-full">
-                {loading ? "Logging In..." : "Login"}
+                {loading ? "Singing Up..." : "Sign Up"}
               </Button>
             </DialogFooter>
           </form>

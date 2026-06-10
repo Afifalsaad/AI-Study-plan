@@ -64,7 +64,7 @@ const LoginForm = () => {
       });
     }
   };
-  console.log("from login form", session);
+  // console.log("from login form", session);
 
   return (
     <div>
