@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Swal from "sweetalert2";
 
-const LoginForm = () => {
+const RegisterForm = () => {
   const session = useSession();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -70,18 +70,11 @@ const LoginForm = () => {
     <div>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         {session?.status === "authenticated" ? (
-          <Button
-            onClick={() => signOut()}
-            variant="outline"
-            className="dark:text-white hover:cursor-pointer">
-            Log Out
-          </Button>
+          ""
         ) : (
           <DialogTrigger asChild>
-            <Button
-              variant="outline"
-              className="dark:text-white hover:cursor-pointer">
-              Login
+            <Button className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">
+              Get Started
             </Button>
           </DialogTrigger>
         )}
@@ -128,4 +121,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default RegisterForm;

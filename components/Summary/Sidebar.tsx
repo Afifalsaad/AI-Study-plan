@@ -58,7 +58,7 @@ const Sidebar = ({
         />
       )}
       <aside
-        className={`fixed md:static top-16 bottom-0 left-0 border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900 flex flex-col duration-700 ease-in-out z-50 shrink-0 ${
+        className={`fixed md:static top-16 bottom-0 left-0 border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900 flex flex-col  z-50 shrink-0 ${
           sidebarOpen
             ? "translate-x-0 w-72 sm:w-80 border-r opacity-100"
             : "-translate-x-full md:translate-x-0 md:w-20 md:border-r"

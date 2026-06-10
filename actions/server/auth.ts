@@ -1,4 +1,7 @@
-export const loginUser = async (payload: { email: string; password: string }): Promise<{ id: string; email: string; password: string } | null> => {
+export const loginUser = async (payload: {
+  email: string;
+  password: string;
+}): Promise<{ id: string; email: string; password: string } | null> => {
   const { email, password } = payload;
   const demoEmail = "example@gmail.com";
   const demoPassword = "password";

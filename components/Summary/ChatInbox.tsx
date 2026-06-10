@@ -68,9 +68,9 @@ const ChatInbox = ({
   };
 
   return (
-    <main className="flex-1 flex flex-col overflow-hidden relative transition-all duration-700 ease-in-out ">
+    <main className="flex-1 flex flex-col overflow-hidden relative transition-all">
       {/* Chat Header */}
-      <div className="h-17 px-4 sm:px-6 border-b  dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-between z-10 shrink-0">
+      <div className="h-17 px-4 sm:px-6 border-b  dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-between z-10 shrink-0 ">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
           {/* Toggle Sidebar Button for all screen sizes */}
           <button
@@ -125,7 +125,7 @@ const ChatInbox = ({
       {loading ? (
         <div className="flex-1"></div>
       ) : (
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50 dark:bg-slate-950/80">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50 dark:bg-slate-950/80 ">
           {/* System Notification */}
           <div className="flex justify-center">
             <div className="bg-indigo-50/80 dark:bg-indigo-950/30 border border-indigo-100/50 dark:border-indigo-900/20 text-indigo-900 dark:text-indigo-300 text-xs px-4 py-2 rounded-2xl flex items-center gap-2 shadow-xs">
@@ -263,7 +263,7 @@ const ChatInbox = ({
       )}
 
       {/* BOTTOM INPUT BAR */}
-      <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800/80 shrink-0 z-10">
+      <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800/80 shrink-0 z-10 ">
         <form onSubmit={handleSendMessage} className=" flex items-center gap-2">
           {/* Attachment Button */}
           <button
