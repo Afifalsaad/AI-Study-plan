@@ -24,23 +24,57 @@ const RegisterForm = () => {
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-
     const form = new FormData(e.currentTarget);
+    try {
+      setLoading(true);
 
-    const userInfo = {
-      name: form.get("name"),
-      email: form.get("email"),
-      password: form.get("password"),
-    };
+      const result = await registerUser({
+        name: String(form.get("name")),
+        email: String(form.get("email")),
+        password: String(form.get("password")),
+      });
 
-    const result = await registerUser({
-      name: String(form.get("name")),
-      email: String(form.get("email")),
-      password: String(form.get("password")),
-    });
+      if (!result?.success) {
+        Swal.fire({
+          icon: "error",
+          title: "Already Registered. Please login.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        return;
+      }
 
-    console.log("from login form", session, userInfo, result);
+      const res = await signIn("credentials", {
+        email: String(form.get("email")),
+        password: String(form.get("password")),
+        redirect: false,
+      });
+      if (!res?.ok) {
+        Swal.fire({
+          icon: "error",
+          title: "Login failed",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        return;
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "Account created & logged in.",
+        timer: 1000,
+        showConfirmButton: false,
+      });
+
+      setIsOpen(false);
+    } catch {
+      Swal.fire({
+        icon: "error",
+        title: "Something went wrong",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -75,10 +109,10 @@ const RegisterForm = () => {
                 />
               </Field>
               <Field>
-                <Label htmlFor="name-1">Email</Label>
+                <Label htmlFor="email-1">Email</Label>
                 <Input
                   className="h-5"
-                  id="name-1"
+                  id="email-1"
                   name="email"
                   placeholder="example@email.com"
                 />
@@ -97,7 +131,7 @@ const RegisterForm = () => {
               <Button
                 type="submit"
                 className="bg-indigo-800 hover:bg-indigo-900 hover:cursor-pointer w-full">
-                {loading ? "Singing Up..." : "Sign Up"}
+                {loading ? "Signing Up..." : "Sign Up"}
               </Button>
             </DialogFooter>
           </form>

@@ -12,7 +12,7 @@ model User {
   createdAt DateTime @default(now())
   name      String?
   email     String   @unique
-  password     String   @default("")
+  password     String
   updatedAt     DateTime @default(now())  @updatedAt
 }
 
