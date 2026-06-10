@@ -1,0 +1,25 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  name      String?
+  email     String   @unique
+  password     String   @default("")
+  updatedAt     DateTime @default(now())  @updatedAt
+}
+
+model Summary {
+  id        Int      @id @default(autoincrement())
+  userId      Int   
+  title     String   
+  content     String   @db.Text 
+  createdAt DateTime  @default(now())
+}
