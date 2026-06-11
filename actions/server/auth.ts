@@ -48,7 +48,7 @@ export const registerUser = async (payload: {
 export const loginUser = async (payload: {
   email: string;
   password: string;
-}): Promise<{ id: string; email: string; password: string } | null> => {
+}): Promise<{ id: number; name: string | null; email: string; password: string; createdAt: Date; updatedAt: Date } | null> => {
   const { email, password } = payload;
   console.log("from login server", payload);
 
@@ -60,7 +60,11 @@ export const loginUser = async (payload: {
     where: { email },
   });
 
-  const isMatched = await bcrypt.compare(password, user?.password);
+  if (!user) {
+    return null;
+  }
+
+  const isMatched = await bcrypt.compare(password, user.password);
   if (isMatched) {
     return user;
   } else {

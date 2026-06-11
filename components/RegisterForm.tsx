@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import Google from "../public/google.png";
+import Github from "../public/github.png";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { signIn, useSession } from "next-auth/react";
 import Swal from "sweetalert2";
 import { registerUser } from "@/actions/server/auth";
+import Image from "next/image";
 
 const RegisterForm = () => {
   const session = useSession();
@@ -77,6 +80,10 @@ const RegisterForm = () => {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    await signIn("google");
+  };
+
   return (
     <div>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -135,6 +142,24 @@ const RegisterForm = () => {
               </Button>
             </DialogFooter>
           </form>
+          <div className="text-gray-500">
+            <p className="text-center">Or, login with</p>
+            <div className="flex justify-center gap-6">
+              <Button
+                onClick={handleGoogleLogin}
+                variant="ghost"
+                className="text-[12px] tracking-tight hover:cursor-pointer hover:bg-white p-0 items-center border-2 border-black">
+                <Image width={12} height={12} alt="google" src={Google}></Image>{" "}
+                Google
+              </Button>
+              <Button
+                variant="ghost"
+                className="text-[12px] tracking-tight hover:cursor-pointer hover:bg-white p-0">
+                <Image width={12} height={12} alt="google" src={Github}></Image>{" "}
+                Github
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

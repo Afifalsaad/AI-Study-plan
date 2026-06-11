@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import Google from "../public/google.png";
+import Github from "../public/github.png";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Swal from "sweetalert2";
+import Link from "next/link";
+import Image from "next/image";
 
 const LoginForm = () => {
   const session = useSession();
@@ -62,7 +66,10 @@ const LoginForm = () => {
       });
     }
   };
-  // console.log("from login form", session);
+
+  const handleGoogleLogin = async () => {
+    await signIn("google");
+  };
 
   return (
     <div>
@@ -84,7 +91,7 @@ const LoginForm = () => {
           </DialogTrigger>
         )}
 
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="sm:max-w-sm gap-10">
           <form onSubmit={handleLogin}>
             <DialogHeader className="text-center">
               <DialogTitle>Log In</DialogTitle>
@@ -119,7 +126,31 @@ const LoginForm = () => {
                 {loading ? "Logging In..." : "Login"}
               </Button>
             </DialogFooter>
+            <p className="text-center text-gray-500">
+              Don&apos;t have an account?{" "}
+              <Link href="/" className="text-blue-600">
+                Sign up
+              </Link>
+            </p>
           </form>
+          <div className="text-gray-500">
+            <p className="text-center">Or, login with</p>
+            <div className="flex justify-center gap-6">
+              <Button
+                onClick={handleGoogleLogin}
+                variant="ghost"
+                className="text-[12px] tracking-tight hover:cursor-pointer hover:bg-white p-0 items-center">
+                <Image width={12} height={12} alt="google" src={Google}></Image>{" "}
+                Google
+              </Button>
+              <Button
+                variant="ghost"
+                className="text-[12px] tracking-tight hover:cursor-pointer hover:bg-white p-0">
+                <Image width={12} height={12} alt="google" src={Github}></Image>{" "}
+                Github
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
