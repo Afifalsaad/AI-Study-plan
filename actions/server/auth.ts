@@ -8,7 +8,17 @@ export const registerUser = async (payload: {
   email: string;
   password: string;
 }): Promise<
-  | { success: true; user: { id: number; name: string | null; email: string; password: string; createdAt: Date; updatedAt: Date } }
+  | {
+      success: true;
+      user: {
+        id: number;
+        name: string | null;
+        email: string;
+        password: string;
+        createdAt: Date;
+        updatedAt: Date;
+      };
+    }
   | { success: false; message: string }
   | null
 > => {
@@ -40,11 +50,20 @@ export const loginUser = async (payload: {
   password: string;
 }): Promise<{ id: string; email: string; password: string } | null> => {
   const { email, password } = payload;
-  const demoEmail = "example@gmail.com";
-  const demoPassword = "password";
+  console.log("from login server", payload);
 
-  if (demoEmail == email && demoPassword == password) {
-    return { id: "1", email, password };
+  if (!email || !password) {
+    return null;
   }
-  return null;
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  const isMatched = await bcrypt.compare(password, user?.password);
+  if (isMatched) {
+    return user;
+  } else {
+    return null;
+  }
 };

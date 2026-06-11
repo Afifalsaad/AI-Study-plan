@@ -39,16 +39,14 @@ const LoginForm = () => {
     });
 
     if (result?.ok) {
-      setTimeout(() => {
-        Swal.fire({
-          icon: "success",
-          title: "Logged In",
-          timer: 1000,
-          showConfirmButton: false,
-        });
-        setIsOpen(false);
-        setLoading(false);
-      }, 1500);
+      Swal.fire({
+        icon: "success",
+        title: "Logged In",
+        timer: 1000,
+        showConfirmButton: false,
+      });
+      setIsOpen(false);
+      setLoading(false);
     } else {
       setIsOpen(false);
       setLoading(false);
