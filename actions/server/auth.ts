@@ -4,10 +4,10 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
 export const registerUser = async (payload: {
-  name: string;
-  email: string;
-  password: string;
-  image: string;
+  name?: string | null;
+  email?: string | null;
+  password?: string | null;
+  image?: string | null;
 }): Promise<
   | {
       success: true;
@@ -15,8 +15,8 @@ export const registerUser = async (payload: {
         id: number;
         name: string | null;
         email: string;
-        image: string;
-        password: string;
+        image: string | null;
+        password: string | null;
         createdAt: Date;
         updatedAt: Date;
       };
@@ -27,7 +27,7 @@ export const registerUser = async (payload: {
   const { name, email, password, image } = payload;
   console.log("SERVER ACTION RUNNING", payload);
 
-  if (!email || !password) return null;
+  if (!email) return null;
 
   const isExist = await prisma.user.findUnique({
     where: { email },
@@ -40,7 +40,7 @@ export const registerUser = async (payload: {
     data: {
       name: name,
       email: email,
-      password: await bcrypt.hash(password, 10),
+      password: password ? await bcrypt.hash(password, 10) : null,
       image: image,
     },
   });
@@ -55,7 +55,9 @@ export const loginUser = async (payload: {
   id: number;
   name: string | null;
   email: string;
-  password: string;
+  password: string | null;
+  image: string | null;
+  provider: string | null;
   createdAt: Date;
   updatedAt: Date;
 } | null> => {
@@ -71,6 +73,10 @@ export const loginUser = async (payload: {
   });
 
   if (!user) {
+    return null;
+  }
+
+  if (!user.password) {
     return null;
   }
 

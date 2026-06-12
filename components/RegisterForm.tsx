@@ -32,9 +32,9 @@ const RegisterForm = () => {
       setLoading(true);
 
       const result = await registerUser({
-        name: String(form.get("name")),
-        email: String(form.get("email")),
-        password: String(form.get("password")),
+        name: form.get("name")?.toString() ?? undefined,
+        email: form.get("email")?.toString() ?? undefined,
+        password: form.get("password")?.toString() ?? undefined,
       });
 
       if (!result?.success) {
@@ -48,8 +48,8 @@ const RegisterForm = () => {
       }
 
       const res = await signIn("credentials", {
-        email: String(form.get("email")),
-        password: String(form.get("password")),
+        email: form.get("email")?.toString() ?? "",
+        password: form.get("password")?.toString() ?? "",
         redirect: false,
       });
       if (!res?.ok) {
@@ -83,11 +83,12 @@ const RegisterForm = () => {
   const handleGoogleLogin = async () => {
     await signIn("google");
     const user = session?.data?.user;
+    if (!user) return;
     try {
       await registerUser({
-        name: user.name,
-        email: user.email,
-        image: user.image,
+        name: user.name ?? undefined,
+        email: user.email ?? undefined,
+        image: user.image ?? undefined,
       });
     } catch (error) {
       console.log(error);
@@ -97,11 +98,12 @@ const RegisterForm = () => {
   const handleGithubLogin = async () => {
     await signIn("github");
     const user = session?.data?.user;
+    if (!user) return;
     try {
       await registerUser({
-        name: user.name,
-        email: user.email,
-        image: user.image,
+        name: user.name ?? undefined,
+        email: user.email ?? undefined,
+        image: user.image ?? undefined,
       });
     } catch (error) {
       console.log(error);

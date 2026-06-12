@@ -70,8 +70,8 @@ const authOptions = {
       clientSecret: getRequiredEnv("GOOGLE_CLIENT_SECRET"),
     }),
     GitHubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
+      clientId: getRequiredEnv("GITHUB_ID"),
+      clientSecret: getRequiredEnv("GITHUB_SECRET"),
     }),
   ],
   callbacks: {
