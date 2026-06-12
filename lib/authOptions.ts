@@ -1,7 +1,7 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import type { DefaultSession, NextAuthOptions, User } from "next-auth";
-import type { JWT } from "next-auth/jwt";
+import GitHubProvider from "next-auth/providers/github";
 import { loginUser } from "@/actions/server/auth";
 import { prisma } from "./prisma";
 
@@ -69,6 +69,10 @@ const authOptions = {
       clientId: getRequiredEnv("GOOGLE_CLIENT_ID"),
       clientSecret: getRequiredEnv("GOOGLE_CLIENT_SECRET"),
     }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
+    }),
   ],
   callbacks: {
     async signIn({ user, account }) {
@@ -79,7 +83,7 @@ const authOptions = {
       });
 
       if (!existingUser) {
-        const result = await prisma.user.create({
+        await prisma.user.create({
           data: {
             name: user.name!,
             email: user.email!,
@@ -87,7 +91,6 @@ const authOptions = {
             provider: account?.provider,
           },
         });
-        console.log("from authOption", result, account);
       }
       return true;
     },

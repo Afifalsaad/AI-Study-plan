@@ -81,7 +81,7 @@ const RegisterForm = () => {
   };
 
   const handleGoogleLogin = async () => {
-    const result = await signIn("google");
+    await signIn("google");
     const user = session?.data?.user;
     try {
       await registerUser({
@@ -93,7 +93,22 @@ const RegisterForm = () => {
       console.log(error);
     }
   };
-  console.log(session?.data?.user);
+
+  const handleGithubLogin = async () => {
+    await signIn("github");
+    const user = session?.data?.user;
+    try {
+      await registerUser({
+        name: user.name,
+        email: user.email,
+        image: user.image,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // console.log(session);
 
   return (
     <div>
@@ -164,6 +179,7 @@ const RegisterForm = () => {
                 Google
               </Button>
               <Button
+                onClick={handleGithubLogin}
                 variant="ghost"
                 className="text-[12px] tracking-tight hover:cursor-pointer hover:bg-white p-0">
                 <Image width={12} height={12} alt="google" src={Github}></Image>{" "}
