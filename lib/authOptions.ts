@@ -3,6 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import type { DefaultSession, NextAuthOptions, User } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import { loginUser } from "@/actions/server/auth";
+import { prisma } from "./prisma";
 
 declare module "next-auth" {
   interface Session {
@@ -42,9 +43,7 @@ const authOptions = {
             ? credentials.email.trim()
             : "";
         const password =
-          typeof credentials?.password === "string"
-            ? credentials.password
-            : "";
+          typeof credentials?.password === "string" ? credentials.password : "";
 
         if (!email || !password) {
           return null;
@@ -72,6 +71,26 @@ const authOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      const existingUser = await prisma.user.findUnique({
+        where: {
+          email: user.email!,
+        },
+      });
+
+      if (!existingUser) {
+        const result = await prisma.user.create({
+          data: {
+            name: user.name!,
+            email: user.email!,
+            image: user.image,
+            provider: account?.provider,
+          },
+        });
+        console.log("from authOption", result, account);
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;

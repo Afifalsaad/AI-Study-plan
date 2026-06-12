@@ -81,8 +81,19 @@ const RegisterForm = () => {
   };
 
   const handleGoogleLogin = async () => {
-    await signIn("google");
+    const result = await signIn("google");
+    const user = session?.data?.user;
+    try {
+      await registerUser({
+        name: user.name,
+        email: user.email,
+        image: user.image,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
+  console.log(session?.data?.user);
 
   return (
     <div>

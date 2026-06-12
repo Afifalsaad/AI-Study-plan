@@ -7,6 +7,7 @@ export const registerUser = async (payload: {
   name: string;
   email: string;
   password: string;
+  image: string;
 }): Promise<
   | {
       success: true;
@@ -14,6 +15,7 @@ export const registerUser = async (payload: {
         id: number;
         name: string | null;
         email: string;
+        image: string;
         password: string;
         createdAt: Date;
         updatedAt: Date;
@@ -22,7 +24,7 @@ export const registerUser = async (payload: {
   | { success: false; message: string }
   | null
 > => {
-  const { name, email, password } = payload;
+  const { name, email, password, image } = payload;
   console.log("SERVER ACTION RUNNING", payload);
 
   if (!email || !password) return null;
@@ -39,6 +41,7 @@ export const registerUser = async (payload: {
       name: name,
       email: email,
       password: await bcrypt.hash(password, 10),
+      image: image,
     },
   });
 
@@ -48,7 +51,14 @@ export const registerUser = async (payload: {
 export const loginUser = async (payload: {
   email: string;
   password: string;
-}): Promise<{ id: number; name: string | null; email: string; password: string; createdAt: Date; updatedAt: Date } | null> => {
+}): Promise<{
+  id: number;
+  name: string | null;
+  email: string;
+  password: string;
+  createdAt: Date;
+  updatedAt: Date;
+} | null> => {
   const { email, password } = payload;
   console.log("from login server", payload);
 
