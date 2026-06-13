@@ -75,37 +75,34 @@ const Navbar = () => {
               {/* Get Started Button */}
               <Button
                 onClick={() => setAuthMode("register")}
-                className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 hover:cursor-pointer">
+                className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 hover:cursor-pointer dark:text-white">
                 Get Started
               </Button>
-
-              
             </>
           )}
         </div>
-        
       </div>
       {!isAuthenticated && (
-  <>
-    <LoginForm
-      isOpen={authMode === "login"}
-      onOpenChange={(open) => setAuthMode(open ? "login" : null)}
-      onSwitchToRegister={() => {
-        setAuthMode(null);
-        setTimeout(() => setAuthMode("register"), 250);
-      }}
-    />
+        <>
+          <LoginForm
+            isOpen={authMode === "login"}
+            onOpenChange={(open) => setAuthMode(open ? "login" : null)}
+            onSwitchToRegister={() => {
+              setAuthMode(null);
+              setTimeout(() => setAuthMode("register"), 250);
+            }}
+          />
 
-    <RegisterForm
-      isOpen={authMode === "register"}
-      onOpenChange={(open) => setAuthMode(open ? "register" : null)}
-      onSwitchToLogin={() => {
-        setAuthMode(null);
-        setTimeout(() => setAuthMode("login"), 250);
-      }}
-    />
-  </>
-)}
+          <RegisterForm
+            isOpen={authMode === "register"}
+            onOpenChange={(open) => setAuthMode(open ? "register" : null)}
+            onSwitchToLogin={() => {
+              setAuthMode(null);
+              setTimeout(() => setAuthMode("login"), 250);
+            }}
+          />
+        </>
+      )}
     </nav>
   );
 };

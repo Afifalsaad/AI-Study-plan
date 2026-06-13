@@ -170,7 +170,7 @@ const RegisterForm = ({
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-indigo-800 hover:bg-indigo-900 hover:cursor-pointer w-full">
+                className="bg-indigo-800 hover:bg-indigo-900 hover:cursor-pointer w-full dark:text-white">
                 {loading ? "Signing Up..." : "Sign Up"}
               </Button>
             </DialogFooter>
@@ -185,19 +185,19 @@ const RegisterForm = ({
             </div>
           </form>
           <div className="text-gray-500">
-            <p className="text-center text-sm mb-2">Or, login with</p>
+            <p className="text-center text-sm mb-3">Or, login with</p>
             <div className="flex justify-center gap-6">
               <Button
                 onClick={handleGoogleLogin}
                 variant="ghost"
-                className="text-[12px] tracking-tight hover:cursor-pointer hover:bg-white p-0 items-center">
+                className="text-[12px] tracking-tight hover:cursor-pointer hover:bg-white p-0 items-center h-0">
                 <Image width={12} height={12} alt="google" src={Google}></Image>{" "}
                 Google
               </Button>
               <Button
                 onClick={handleGithubLogin}
                 variant="ghost"
-                className="text-[12px] tracking-tight hover:cursor-pointer hover:bg-white p-0">
+                className="text-[12px] tracking-tight hover:cursor-pointer hover:bg-white p-0 h-0">
                 <Image width={12} height={12} alt="github" src={Github}></Image>{" "}
                 Github
               </Button>
