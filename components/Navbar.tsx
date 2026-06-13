@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 
 const Navbar = () => {
+  // const handleDialogClose = (open: boolean) => {};
   return (
     <nav className="border-b border-border bg-white/80 dark:bg-slate-950 backdrop-blur-md sticky top-0 z-50 transition-colors duration-700 ease-in-out">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -39,7 +39,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <LoginForm></LoginForm>
+          <LoginForm directShow={false} onCustomClose={() => open}></LoginForm>
           <RegisterForm></RegisterForm>
         </div>
       </div>

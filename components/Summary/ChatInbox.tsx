@@ -42,7 +42,6 @@ const ChatInbox = ({
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-  console.log(messages);
 
   useEffect(() => {
     scrollToBottom();

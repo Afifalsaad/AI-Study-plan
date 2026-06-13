@@ -20,9 +20,14 @@ import Swal from "sweetalert2";
 import Link from "next/link";
 import Image from "next/image";
 
-const LoginForm = () => {
+interface LoginFormProps {
+  directShow?: boolean;
+  onCustomClose: (open: boolean) => void;
+}
+
+const LoginForm = ({ directShow = false, onCustomClose }: LoginFormProps) => {
   const session = useSession();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(directShow);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -73,7 +78,12 @@ const LoginForm = () => {
 
   return (
     <div>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          setIsOpen(open);
+          onCustomClose(open);
+        }}>
         {session?.status === "authenticated" ? (
           <Button
             onClick={() => signOut()}
@@ -119,6 +129,7 @@ const LoginForm = () => {
                 />
               </Field>
             </FieldGroup>
+
             <DialogFooter>
               <Button
                 type="submit"

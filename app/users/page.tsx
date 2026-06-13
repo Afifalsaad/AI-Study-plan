@@ -1,9 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import React from "react";
 
 const page = async () => {
   const users = await prisma.user.findMany();
-//   console.log("from user page", users);
+  //   console.log("from user page", users);
   return (
     <div>
       {users.map((user) => (
