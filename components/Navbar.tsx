@@ -1,25 +1,26 @@
 "use client";
 
+import React, { useState } from "react";
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import { useSession } from "next-auth/react";
 import { AvatarDropdown } from "./Avatar";
-import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
+import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
   const session = useSession();
-  const [loading, setLoading] = useState(false);
-  const user = session.status == "authenticated";
-  console.log(session);
+  const isAuthenticated = session.status === "authenticated";
 
-  // const handleDialogClose = (open: boolean) => {};
+  const [authMode, setAuthMode] = useState<"login" | "register" | null>(null);
+
   return (
     <nav className="border-b border-border bg-white/80 dark:bg-slate-950 backdrop-blur-md sticky top-0 z-50 transition-colors duration-700 ease-in-out">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        {/* Logo */}
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-xl">S</span>
@@ -29,6 +30,7 @@ const Navbar = () => {
           </span>
         </div>
 
+        {/* Navigation Links */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600 dark:text-gray-300">
           <Link
             href="#features"
@@ -47,27 +49,63 @@ const Navbar = () => {
           </Link>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Actions (Theme & Auth) */}
+        <div className="flex items-center justify-end gap-3">
           <ThemeToggle />
+
           {session?.status === "loading" ? (
-            <div className="flex items-center gap-4 [--radius:1.2rem]">
+            <div className="flex items-center justify-center gap-4 [--radius:1.2rem]">
               <Badge variant="outline">
                 <Spinner data-icon="inline-start" />
                 Processing
               </Badge>
             </div>
-          ) : user ? (
-            <AvatarDropdown></AvatarDropdown>
+          ) : isAuthenticated ? (
+            <AvatarDropdown />
           ) : (
             <>
-              <LoginForm
-                directShow={false}
-                onCustomClose={() => open}></LoginForm>
-              <RegisterForm></RegisterForm>
+              {/* Login Button */}
+              <Button
+                variant="outline"
+                onClick={() => setAuthMode("login")}
+                className="dark:text-white hover:cursor-pointer">
+                Login
+              </Button>
+
+              {/* Get Started Button */}
+              <Button
+                onClick={() => setAuthMode("register")}
+                className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 hover:cursor-pointer">
+                Get Started
+              </Button>
+
+              
             </>
           )}
         </div>
+        
       </div>
+      {!isAuthenticated && (
+  <>
+    <LoginForm
+      isOpen={authMode === "login"}
+      onOpenChange={(open) => setAuthMode(open ? "login" : null)}
+      onSwitchToRegister={() => {
+        setAuthMode(null);
+        setTimeout(() => setAuthMode("register"), 250);
+      }}
+    />
+
+    <RegisterForm
+      isOpen={authMode === "register"}
+      onOpenChange={(open) => setAuthMode(open ? "register" : null)}
+      onSwitchToLogin={() => {
+        setAuthMode(null);
+        setTimeout(() => setAuthMode("login"), 250);
+      }}
+    />
+  </>
+)}
     </nav>
   );
 };

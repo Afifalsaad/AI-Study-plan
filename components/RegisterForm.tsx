@@ -10,7 +10,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -20,9 +19,18 @@ import Swal from "sweetalert2";
 import { registerUser } from "@/actions/server/auth";
 import Image from "next/image";
 
-const RegisterForm = () => {
+interface RegisterFormProps {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSwitchToLogin: () => void;
+}
+
+const RegisterForm = ({
+  isOpen,
+  onOpenChange,
+  onSwitchToLogin,
+}: RegisterFormProps) => {
   const session = useSession();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -69,7 +77,7 @@ const RegisterForm = () => {
         showConfirmButton: false,
       });
 
-      setIsOpen(false);
+      onOpenChange(false);
     } catch {
       Swal.fire({
         icon: "error",
@@ -113,21 +121,9 @@ const RegisterForm = () => {
     }
   };
 
-  // console.log(session);
-
   return (
     <div>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        {session?.status === "authenticated" ? (
-          ""
-        ) : (
-          <DialogTrigger asChild>
-            <Button className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 hover:cursor-pointer">
-              Get Started
-            </Button>
-          </DialogTrigger>
-        )}
-
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-sm">
           <form onSubmit={handleRegister}>
             <DialogHeader className="text-center">
@@ -144,6 +140,7 @@ const RegisterForm = () => {
                   id="name-1"
                   name="name"
                   placeholder="Your name"
+                  required
                 />
               </Field>
               <Field>
@@ -152,7 +149,9 @@ const RegisterForm = () => {
                   className="h-5"
                   id="email-1"
                   name="email"
+                  type="email"
                   placeholder="example@email.com"
+                  required
                 />
               </Field>
               <Field>
@@ -161,20 +160,32 @@ const RegisterForm = () => {
                   className="h-5 mb-2"
                   id="username-1"
                   name="password"
+                  type="password"
                   placeholder="Password"
+                  required
                 />
               </Field>
             </FieldGroup>
             <DialogFooter>
               <Button
                 type="submit"
+                disabled={loading}
                 className="bg-indigo-800 hover:bg-indigo-900 hover:cursor-pointer w-full">
                 {loading ? "Signing Up..." : "Sign Up"}
               </Button>
             </DialogFooter>
+            <div className="flex justify-center gap-1 text-sm">
+              <p>Already have an account?</p>
+              <button
+                type="button"
+                onClick={onSwitchToLogin}
+                className="text-blue-600 font-medium hover:underline cursor-pointer ">
+                Login
+              </button>
+            </div>
           </form>
           <div className="text-gray-500">
-            <p className="text-center">Or, login with</p>
+            <p className="text-center text-sm mb-2">Or, login with</p>
             <div className="flex justify-center gap-6">
               <Button
                 onClick={handleGoogleLogin}
@@ -187,7 +198,7 @@ const RegisterForm = () => {
                 onClick={handleGithubLogin}
                 variant="ghost"
                 className="text-[12px] tracking-tight hover:cursor-pointer hover:bg-white p-0">
-                <Image width={12} height={12} alt="google" src={Github}></Image>{" "}
+                <Image width={12} height={12} alt="github" src={Github}></Image>{" "}
                 Github
               </Button>
             </div>

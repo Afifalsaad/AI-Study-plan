@@ -10,24 +10,25 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Swal from "sweetalert2";
-import Link from "next/link";
 import Image from "next/image";
 
 interface LoginFormProps {
-  directShow?: boolean;
-  onCustomClose: (open: boolean) => void;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSwitchToRegister: () => void;
 }
 
-const LoginForm = ({ directShow = false, onCustomClose }: LoginFormProps) => {
-  const session = useSession();
-  const [isOpen, setIsOpen] = useState<boolean>(directShow);
+const LoginForm = ({
+  isOpen,
+  onOpenChange,
+  onSwitchToRegister,
+}: LoginFormProps) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -47,6 +48,8 @@ const LoginForm = ({ directShow = false, onCustomClose }: LoginFormProps) => {
       redirect: false,
     });
 
+    setLoading(false);
+
     if (result?.ok) {
       Swal.fire({
         icon: "success",
@@ -54,11 +57,9 @@ const LoginForm = ({ directShow = false, onCustomClose }: LoginFormProps) => {
         timer: 1000,
         showConfirmButton: false,
       });
-      setIsOpen(false);
-      setLoading(false);
+      onOpenChange(false);
     } else {
-      setIsOpen(false);
-      setLoading(false);
+      onOpenChange(false);
       Swal.fire({
         icon: "error",
         title: "User Not Found",
@@ -66,7 +67,7 @@ const LoginForm = ({ directShow = false, onCustomClose }: LoginFormProps) => {
         confirmButtonText: "Try Again",
       }).then((result) => {
         if (result.isConfirmed) {
-          setIsOpen(true);
+          onOpenChange(true);
         }
       });
     }
@@ -83,29 +84,7 @@ const LoginForm = ({ directShow = false, onCustomClose }: LoginFormProps) => {
 
   return (
     <div>
-      <Dialog
-        open={isOpen}
-        onOpenChange={(open) => {
-          setIsOpen(open);
-          onCustomClose(open);
-        }}>
-        {session?.status === "authenticated" ? (
-          <Button
-            onClick={() => signOut()}
-            variant="outline"
-            className="dark:text-white hover:cursor-pointer">
-            Log Out
-          </Button>
-        ) : (
-          <DialogTrigger asChild>
-            <Button
-              variant="outline"
-              className="dark:text-white hover:cursor-pointer">
-              Login
-            </Button>
-          </DialogTrigger>
-        )}
-
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-sm gap-10">
           <form onSubmit={handleLogin}>
             <DialogHeader className="text-center">
@@ -122,6 +101,7 @@ const LoginForm = ({ directShow = false, onCustomClose }: LoginFormProps) => {
                   id="name-1"
                   name="email"
                   placeholder="example@email.com"
+                  required
                 />
               </Field>
               <Field>
@@ -130,7 +110,9 @@ const LoginForm = ({ directShow = false, onCustomClose }: LoginFormProps) => {
                   className="h-5 mb-2"
                   id="username-1"
                   name="password"
+                  type="password"
                   placeholder="Password"
+                  required
                 />
               </Field>
             </FieldGroup>
@@ -138,19 +120,23 @@ const LoginForm = ({ directShow = false, onCustomClose }: LoginFormProps) => {
             <DialogFooter>
               <Button
                 type="submit"
+                disabled={loading}
                 className="bg-indigo-800 hover:bg-indigo-900 hover:cursor-pointer w-full">
                 {loading ? "Logging In..." : "Login"}
               </Button>
             </DialogFooter>
-            <p className="text-center text-gray-500">
-              Don&apos;t have an account?{" "}
-              <Link href="/" className="text-blue-600">
+            <div className="flex justify-center gap-1 text-sm">
+              <p>Don&apos;t have an account?</p>
+              <button
+                type="button"
+                onClick={onSwitchToRegister}
+                className="text-blue-600 font-medium hover:underline cursor-pointer ">
                 Sign up
-              </Link>
-            </p>
+              </button>
+            </div>
           </form>
           <div className="text-gray-500">
-            <p className="text-center">Or, login with</p>
+            <p className="text-center text-sm mb-2">Or, login with</p>
             <div className="flex justify-center gap-6">
               <Button
                 onClick={handleGoogleLogin}
@@ -163,7 +149,7 @@ const LoginForm = ({ directShow = false, onCustomClose }: LoginFormProps) => {
                 onClick={handleGithubLogin}
                 variant="ghost"
                 className="text-[12px] tracking-tight hover:cursor-pointer hover:bg-white p-0">
-                <Image width={12} height={12} alt="google" src={Github}></Image>{" "}
+                <Image width={12} height={12} alt="github" src={Github}></Image>{" "}
                 Github
               </Button>
             </div>
