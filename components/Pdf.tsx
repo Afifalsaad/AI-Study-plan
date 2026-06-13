@@ -20,7 +20,6 @@ const Pdf = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const user = session?.status == "authenticated";
-  console.log(session, user);
 
   const handleFile = async (file: File) => {
     if (file && file.type === "application/pdf") {

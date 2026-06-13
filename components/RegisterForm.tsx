@@ -96,6 +96,7 @@ const RegisterForm = () => {
   };
 
   const handleGithubLogin = async () => {
+    setLoading(true);
     await signIn("github");
     const user = session?.data?.user;
     if (!user) return;
@@ -107,6 +108,8 @@ const RegisterForm = () => {
       });
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -176,7 +179,7 @@ const RegisterForm = () => {
               <Button
                 onClick={handleGoogleLogin}
                 variant="ghost"
-                className="text-[12px] tracking-tight hover:cursor-pointer hover:bg-white p-0 items-center border-2 border-black">
+                className="text-[12px] tracking-tight hover:cursor-pointer hover:bg-white p-0 items-center">
                 <Image width={12} height={12} alt="google" src={Google}></Image>{" "}
                 Google
               </Button>

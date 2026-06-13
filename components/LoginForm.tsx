@@ -76,6 +76,11 @@ const LoginForm = ({ directShow = false, onCustomClose }: LoginFormProps) => {
     await signIn("google");
   };
 
+  const handleGithubLogin = async () => {
+    setLoading(true);
+    await signIn("github");
+  };
+
   return (
     <div>
       <Dialog
@@ -155,6 +160,7 @@ const LoginForm = ({ directShow = false, onCustomClose }: LoginFormProps) => {
                 Google
               </Button>
               <Button
+                onClick={handleGithubLogin}
                 variant="ghost"
                 className="text-[12px] tracking-tight hover:cursor-pointer hover:bg-white p-0">
                 <Image width={12} height={12} alt="google" src={Github}></Image>{" "}

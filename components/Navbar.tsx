@@ -4,8 +4,18 @@ import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
+import { useSession } from "next-auth/react";
+import { AvatarDropdown } from "./Avatar";
+import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Spinner } from "@/components/ui/spinner";
 
 const Navbar = () => {
+  const session = useSession();
+  const [loading, setLoading] = useState(false);
+  const user = session.status == "authenticated";
+  console.log(session);
+
   // const handleDialogClose = (open: boolean) => {};
   return (
     <nav className="border-b border-border bg-white/80 dark:bg-slate-950 backdrop-blur-md sticky top-0 z-50 transition-colors duration-700 ease-in-out">
@@ -39,8 +49,23 @@ const Navbar = () => {
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <LoginForm directShow={false} onCustomClose={() => open}></LoginForm>
-          <RegisterForm></RegisterForm>
+          {session?.status === "loading" ? (
+            <div className="flex items-center gap-4 [--radius:1.2rem]">
+              <Badge variant="outline">
+                <Spinner data-icon="inline-start" />
+                Processing
+              </Badge>
+            </div>
+          ) : user ? (
+            <AvatarDropdown></AvatarDropdown>
+          ) : (
+            <>
+              <LoginForm
+                directShow={false}
+                onCustomClose={() => open}></LoginForm>
+              <RegisterForm></RegisterForm>
+            </>
+          )}
         </div>
       </div>
     </nav>
