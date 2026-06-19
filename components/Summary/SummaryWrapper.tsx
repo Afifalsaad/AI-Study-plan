@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar, { Conversation, Message } from "@/components/Summary/Sidebar";
 import ChatInbox from "@/components/Summary/ChatInbox";
 
@@ -103,7 +103,7 @@ const SummaryWrapper = () => {
       prev.map((c) => ({ ...c, active: c.id === conv.id }))
     );
     setActiveConv(conv);
-    
+
     // Save active conversation ID to localStorage for persistence
     localStorage.setItem("active_conv_id", conv.id);
 

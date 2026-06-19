@@ -57,7 +57,6 @@ const Navbar = () => {
             <div className="flex items-center justify-center gap-4 [--radius:1.2rem]">
               <Badge variant="outline">
                 <Spinner data-icon="inline-start" />
-                Processing
               </Badge>
             </div>
           ) : isAuthenticated ? (

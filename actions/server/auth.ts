@@ -25,7 +25,6 @@ export const registerUser = async (payload: {
   | null
 > => {
   const { name, email, password, image } = payload;
-  console.log("SERVER ACTION RUNNING", payload);
 
   if (!email) return null;
 

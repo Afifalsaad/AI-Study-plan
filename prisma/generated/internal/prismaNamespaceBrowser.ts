@@ -89,7 +89,10 @@ export const SummaryScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   title: 'title',
-  content: 'content',
+  fileName: 'fileName',
+  fileSize: 'fileSize',
+  summaryPreview: 'summaryPreview',
+  summaryText: 'summaryText',
   createdAt: 'createdAt'
 } as const
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
+import { prisma } from "@/lib/prisma";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -34,16 +35,36 @@ export async function POST(req: NextRequest) {
       ],
     });
 
+    const summaryText = response.text || "Failed to generate summary.";
+
+    const fileSizeKB = (file.size / 1024).toFixed(1);
+    const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1);
+    const fileSizeStr =
+      file.size > 1024 * 1024 ? `${fileSizeMB} MB` : `${fileSizeKB} KB`;
+    const title = file.name.replace(/\.pdf$/i, "");
+
+    const newConversation = await prisma.summary.create({
+      data: {
+        title: title,
+        userId: 1,
+        summaryPreview: "",
+        fileName: title,
+        fileSize: fileSizeStr,
+        summaryText: summaryText,
+      },
+    });
+    const newConvId = newConversation.id;
+    console.log("From PDF route", newConversation);
+
     return NextResponse.json({
-      summary: response.text || "Failed to generate summary.",
+      success: true,
+      conversationId: newConvId,
+      summary: summaryText,
     });
   } catch (error: unknown) {
     console.error("Error summarizing PDF:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Failed to summarize PDF";
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

@@ -42,91 +42,39 @@ const Pdf = () => {
         return;
       }
 
-      // try {
-      //   const formData = new FormData();
-      //   formData.append("file", file);
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
 
-      //   const res = await axios.post("/api/summarize", formData, {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //     onUploadProgress: (progressEvent) => {
-      //       const percent = Math.round(
-      //         (progressEvent.loaded * 100) / (progressEvent.total || file.size)
-      //       );
+        const res = await axios.post("/api/summarize", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          onUploadProgress: (progressEvent) => {
+            const percent = Math.round(
+              (progressEvent.loaded * 100) / (progressEvent.total || file.size)
+            );
 
-      //       setUploadProgress(percent);
+            setUploadProgress(percent);
 
-      //       if (percent === 100) {
-      //         setStatus("Analyzing PDF...");
-      //       }
-      //     },
-      //   });
+            if (percent === 100) {
+              setStatus("Analyzing PDF...");
+            }
+          },
+        });
 
-      //   setStatus("Generating summary...");
-
-      //   const summaryText = res.data.summary as string;
-
-      //   // Create a new conversation object
-      //   const newConvId = `custom_${Date.now()}`;
-      //   const fileSizeKB = (file.size / 1024).toFixed(1);
-      //   const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1);
-      //   const fileSizeStr =
-      //     file.size > 1024 * 1024 ? `${fileSizeMB} MB` : `${fileSizeKB} KB`;
-
-      //   const newConv = {
-      //     id: newConvId,
-      //     title: file.name.replace(/\.pdf$/i, ""),
-      //     fileName: file.name,
-      //     fileSize: fileSizeStr,
-      //     time: "Just now",
-      //     active: true,
-      //     summaryPreview: summaryText.substring(0, 80) + "...",
-      //   };
-
-      //   // Create the initial AI summary message
-      //   const summaryMessage = {
-      //     id: `m_${Date.now()}`,
-      //     sender: "ai" as const,
-      //     text: summaryText,
-      //     time: new Date().toLocaleTimeString([], {
-      //       hour: "2-digit",
-      //       minute: "2-digit",
-      //     }),
-      //   };
-
-      //   // Save to localStorage
-      //   const existingConvs = JSON.parse(
-      //     localStorage.getItem("custom_conversations") || "[]"
-      //   );
-      //   existingConvs.unshift(newConv);
-      //   localStorage.setItem(
-      //     "custom_conversations",
-      //     JSON.stringify(existingConvs)
-      //   );
-
-      //   // Save messages keyed by conversation id
-      //   const messagesMap = JSON.parse(
-      //     localStorage.getItem("custom_messages_map") || "{}"
-      //   );
-      //   messagesMap[newConvId] = [summaryMessage];
-      //   localStorage.setItem(
-      //     "custom_messages_map",
-      //     JSON.stringify(messagesMap)
-      //   );
-
-      //   // Store active conversation id for SummaryWrapper to pick up
-      //   localStorage.setItem("active_conv_id", newConvId);
-
-      //   setLoading(false);
-      //   router.push("/Summary");
-      // } catch (error: unknown) {
-      //   console.error("Error uploading PDF:", error);
-      //   setLoading(false);
-      //   const errorMessage =
-      //     error instanceof Error ? error.message : "Unknown error occurred";
-      //   alert("Failed to summarize PDF: " + errorMessage);
-      // }
+        setStatus("Generating summary...");
+        const { conversationId, summary } = res.data;
+        console.log("From DB & PDF:", summary, conversationId);
+        setLoading(false);
+        // router.push("/Summary");
+      } catch (error: unknown) {
+        console.error("Error uploading PDF:", error);
+        setLoading(false);
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error occurred";
+        alert("Failed to summarize PDF: " + errorMessage);
+      }
     } else {
       alert("Please upload one PDF file");
     }
