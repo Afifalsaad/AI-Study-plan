@@ -21,6 +21,7 @@ const Pdf = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const user = session?.status == "authenticated";
+  console.log(session?.data?.user?.id);
 
   const [authMode, setAuthMode] = useState<"login" | "register" | null>(null);
 
@@ -45,6 +46,7 @@ const Pdf = () => {
       try {
         const formData = new FormData();
         formData.append("file", file);
+        formData.append("userId", session?.data?.user?.id || "");
 
         const res = await axios.post("/api/summarize", formData, {
           headers: {
@@ -64,10 +66,11 @@ const Pdf = () => {
         });
 
         setStatus("Generating summary...");
-        const { conversationId, summary } = res.data;
-        console.log("From DB & PDF:", summary, conversationId);
+        const { conversationId } = res.data;
+        // console.log("From DB & PDF:", summary, conversationId);
+        localStorage.setItem("active_conv_id", conversationId.toString());
         setLoading(false);
-        // router.push("/Summary");
+        router.push("/Summary");
       } catch (error: unknown) {
         console.error("Error uploading PDF:", error);
         setLoading(false);

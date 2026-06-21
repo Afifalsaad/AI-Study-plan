@@ -94,9 +94,18 @@ const authOptions = {
       }
       return true;
     },
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
+    async jwt({ token }) {
+
+      if (token.email) {
+        const dbUser = await prisma.user.findUnique({
+          where: {
+            email: token.email,
+          },
+        });
+
+        if (dbUser) {
+          token.id = String(dbUser.id);
+        }
       }
 
       return token;

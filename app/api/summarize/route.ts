@@ -1,6 +1,10 @@
+"use server";
+
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import authOptions from "@/lib/authOptions";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -8,6 +12,11 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File;
+    const userIdValue = formData.get("userId");
+    const userId =
+      typeof userIdValue === "string" && userIdValue.trim()
+        ? Number(userIdValue)
+        : null;
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -46,15 +55,13 @@ export async function POST(req: NextRequest) {
     const newConversation = await prisma.summary.create({
       data: {
         title: title,
-        userId: 1,
-        summaryPreview: "",
+        userId: userId,
         fileName: title,
         fileSize: fileSizeStr,
         summaryText: summaryText,
       },
     });
     const newConvId = newConversation.id;
-    console.log("From PDF route", newConversation);
 
     return NextResponse.json({
       success: true,
@@ -65,6 +72,28 @@ export async function POST(req: NextRequest) {
     console.error("Error summarizing PDF:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Failed to summarize PDF";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  }
+}
+
+export async function GET() {
+  const session = await getServerSession(authOptions);
+  const userIdValue = session?.user?.id;
+  const userId =
+    typeof userIdValue === "string" && userIdValue.trim()
+      ? Number(userIdValue)
+      : null;
+  try {
+    const summaries = await prisma.summary.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+    return NextResponse.json(summaries);
+  } catch (error: unknown) {
+    console.error("Error fetching summaries:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to fetch summaries";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

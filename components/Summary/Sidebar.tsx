@@ -17,6 +17,7 @@ export interface Conversation {
   active?: boolean;
   unread?: boolean;
   summaryPreview: string;
+  summaryText?: string;
 }
 
 export interface Message {

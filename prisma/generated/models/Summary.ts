@@ -40,33 +40,30 @@ export type SummaryMinAggregateOutputType = {
   id: number | null
   userId: number | null
   title: string | null
+  createdAt: Date | null
   fileName: string | null
   fileSize: string | null
-  summaryPreview: string | null
   summaryText: string | null
-  createdAt: Date | null
 }
 
 export type SummaryMaxAggregateOutputType = {
   id: number | null
   userId: number | null
   title: string | null
+  createdAt: Date | null
   fileName: string | null
   fileSize: string | null
-  summaryPreview: string | null
   summaryText: string | null
-  createdAt: Date | null
 }
 
 export type SummaryCountAggregateOutputType = {
   id: number
   userId: number
   title: number
+  createdAt: number
   fileName: number
   fileSize: number
-  summaryPreview: number
   summaryText: number
-  createdAt: number
   _all: number
 }
 
@@ -85,33 +82,30 @@ export type SummaryMinAggregateInputType = {
   id?: true
   userId?: true
   title?: true
+  createdAt?: true
   fileName?: true
   fileSize?: true
-  summaryPreview?: true
   summaryText?: true
-  createdAt?: true
 }
 
 export type SummaryMaxAggregateInputType = {
   id?: true
   userId?: true
   title?: true
+  createdAt?: true
   fileName?: true
   fileSize?: true
-  summaryPreview?: true
   summaryText?: true
-  createdAt?: true
 }
 
 export type SummaryCountAggregateInputType = {
   id?: true
   userId?: true
   title?: true
+  createdAt?: true
   fileName?: true
   fileSize?: true
-  summaryPreview?: true
   summaryText?: true
-  createdAt?: true
   _all?: true
 }
 
@@ -205,11 +199,10 @@ export type SummaryGroupByOutputType = {
   id: number
   userId: number | null
   title: string
+  createdAt: Date
   fileName: string
   fileSize: string
-  summaryPreview: string | null
   summaryText: string
-  createdAt: Date
   _count: SummaryCountAggregateOutputType | null
   _avg: SummaryAvgAggregateOutputType | null
   _sum: SummarySumAggregateOutputType | null
@@ -239,22 +232,20 @@ export type SummaryWhereInput = {
   id?: Prisma.IntFilter<"Summary"> | number
   userId?: Prisma.IntNullableFilter<"Summary"> | number | null
   title?: Prisma.StringFilter<"Summary"> | string
+  createdAt?: Prisma.DateTimeFilter<"Summary"> | Date | string
   fileName?: Prisma.StringFilter<"Summary"> | string
   fileSize?: Prisma.StringFilter<"Summary"> | string
-  summaryPreview?: Prisma.StringNullableFilter<"Summary"> | string | null
   summaryText?: Prisma.StringFilter<"Summary"> | string
-  createdAt?: Prisma.DateTimeFilter<"Summary"> | Date | string
 }
 
 export type SummaryOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   fileName?: Prisma.SortOrder
   fileSize?: Prisma.SortOrder
-  summaryPreview?: Prisma.SortOrderInput | Prisma.SortOrder
   summaryText?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
 }
 
 export type SummaryWhereUniqueInput = Prisma.AtLeast<{
@@ -264,22 +255,20 @@ export type SummaryWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.SummaryWhereInput | Prisma.SummaryWhereInput[]
   userId?: Prisma.IntNullableFilter<"Summary"> | number | null
   title?: Prisma.StringFilter<"Summary"> | string
+  createdAt?: Prisma.DateTimeFilter<"Summary"> | Date | string
   fileName?: Prisma.StringFilter<"Summary"> | string
   fileSize?: Prisma.StringFilter<"Summary"> | string
-  summaryPreview?: Prisma.StringNullableFilter<"Summary"> | string | null
   summaryText?: Prisma.StringFilter<"Summary"> | string
-  createdAt?: Prisma.DateTimeFilter<"Summary"> | Date | string
 }, "id">
 
 export type SummaryOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   fileName?: Prisma.SortOrder
   fileSize?: Prisma.SortOrder
-  summaryPreview?: Prisma.SortOrderInput | Prisma.SortOrder
   summaryText?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
   _count?: Prisma.SummaryCountOrderByAggregateInput
   _avg?: Prisma.SummaryAvgOrderByAggregateInput
   _max?: Prisma.SummaryMaxOrderByAggregateInput
@@ -294,96 +283,87 @@ export type SummaryScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Summary"> | number
   userId?: Prisma.IntNullableWithAggregatesFilter<"Summary"> | number | null
   title?: Prisma.StringWithAggregatesFilter<"Summary"> | string
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Summary"> | Date | string
   fileName?: Prisma.StringWithAggregatesFilter<"Summary"> | string
   fileSize?: Prisma.StringWithAggregatesFilter<"Summary"> | string
-  summaryPreview?: Prisma.StringNullableWithAggregatesFilter<"Summary"> | string | null
   summaryText?: Prisma.StringWithAggregatesFilter<"Summary"> | string
-  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Summary"> | Date | string
 }
 
 export type SummaryCreateInput = {
   userId?: number | null
   title: string
+  createdAt?: Date | string
   fileName: string
   fileSize: string
-  summaryPreview?: string | null
   summaryText: string
-  createdAt?: Date | string
 }
 
 export type SummaryUncheckedCreateInput = {
   id?: number
   userId?: number | null
   title: string
+  createdAt?: Date | string
   fileName: string
   fileSize: string
-  summaryPreview?: string | null
   summaryText: string
-  createdAt?: Date | string
 }
 
 export type SummaryUpdateInput = {
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileName?: Prisma.StringFieldUpdateOperationsInput | string
   fileSize?: Prisma.StringFieldUpdateOperationsInput | string
-  summaryPreview?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryText?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SummaryUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileName?: Prisma.StringFieldUpdateOperationsInput | string
   fileSize?: Prisma.StringFieldUpdateOperationsInput | string
-  summaryPreview?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryText?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SummaryCreateManyInput = {
   id?: number
   userId?: number | null
   title: string
+  createdAt?: Date | string
   fileName: string
   fileSize: string
-  summaryPreview?: string | null
   summaryText: string
-  createdAt?: Date | string
 }
 
 export type SummaryUpdateManyMutationInput = {
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileName?: Prisma.StringFieldUpdateOperationsInput | string
   fileSize?: Prisma.StringFieldUpdateOperationsInput | string
-  summaryPreview?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryText?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SummaryUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileName?: Prisma.StringFieldUpdateOperationsInput | string
   fileSize?: Prisma.StringFieldUpdateOperationsInput | string
-  summaryPreview?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryText?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SummaryCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   fileName?: Prisma.SortOrder
   fileSize?: Prisma.SortOrder
-  summaryPreview?: Prisma.SortOrder
   summaryText?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
 }
 
 export type SummaryAvgOrderByAggregateInput = {
@@ -395,22 +375,20 @@ export type SummaryMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   fileName?: Prisma.SortOrder
   fileSize?: Prisma.SortOrder
-  summaryPreview?: Prisma.SortOrder
   summaryText?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
 }
 
 export type SummaryMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   fileName?: Prisma.SortOrder
   fileSize?: Prisma.SortOrder
-  summaryPreview?: Prisma.SortOrder
   summaryText?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
 }
 
 export type SummarySumOrderByAggregateInput = {
@@ -432,47 +410,43 @@ export type SummarySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   id?: boolean
   userId?: boolean
   title?: boolean
+  createdAt?: boolean
   fileName?: boolean
   fileSize?: boolean
-  summaryPreview?: boolean
   summaryText?: boolean
-  createdAt?: boolean
 }, ExtArgs["result"]["summary"]>
 
 export type SummarySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
   title?: boolean
+  createdAt?: boolean
   fileName?: boolean
   fileSize?: boolean
-  summaryPreview?: boolean
   summaryText?: boolean
-  createdAt?: boolean
 }, ExtArgs["result"]["summary"]>
 
 export type SummarySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
   title?: boolean
+  createdAt?: boolean
   fileName?: boolean
   fileSize?: boolean
-  summaryPreview?: boolean
   summaryText?: boolean
-  createdAt?: boolean
 }, ExtArgs["result"]["summary"]>
 
 export type SummarySelectScalar = {
   id?: boolean
   userId?: boolean
   title?: boolean
+  createdAt?: boolean
   fileName?: boolean
   fileSize?: boolean
-  summaryPreview?: boolean
   summaryText?: boolean
-  createdAt?: boolean
 }
 
-export type SummaryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "title" | "fileName" | "fileSize" | "summaryPreview" | "summaryText" | "createdAt", ExtArgs["result"]["summary"]>
+export type SummaryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "title" | "createdAt" | "fileName" | "fileSize" | "summaryText", ExtArgs["result"]["summary"]>
 
 export type $SummaryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Summary"
@@ -481,11 +455,10 @@ export type $SummaryPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     id: number
     userId: number | null
     title: string
+    createdAt: Date
     fileName: string
     fileSize: string
-    summaryPreview: string | null
     summaryText: string
-    createdAt: Date
   }, ExtArgs["result"]["summary"]>
   composites: {}
 }
@@ -912,11 +885,10 @@ export interface SummaryFieldRefs {
   readonly id: Prisma.FieldRef<"Summary", 'Int'>
   readonly userId: Prisma.FieldRef<"Summary", 'Int'>
   readonly title: Prisma.FieldRef<"Summary", 'String'>
+  readonly createdAt: Prisma.FieldRef<"Summary", 'DateTime'>
   readonly fileName: Prisma.FieldRef<"Summary", 'String'>
   readonly fileSize: Prisma.FieldRef<"Summary", 'String'>
-  readonly summaryPreview: Prisma.FieldRef<"Summary", 'String'>
   readonly summaryText: Prisma.FieldRef<"Summary", 'String'>
-  readonly createdAt: Prisma.FieldRef<"Summary", 'DateTime'>
 }
     
 

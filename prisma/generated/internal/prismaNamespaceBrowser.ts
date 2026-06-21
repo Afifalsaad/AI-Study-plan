@@ -74,12 +74,12 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export const UserScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
-  name: 'name',
   email: 'email',
-  image: 'image',
+  name: 'name',
   password: 'password',
-  provider: 'provider',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  image: 'image',
+  provider: 'provider'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -89,11 +89,10 @@ export const SummaryScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   title: 'title',
+  createdAt: 'createdAt',
   fileName: 'fileName',
   fileSize: 'fileSize',
-  summaryPreview: 'summaryPreview',
-  summaryText: 'summaryText',
-  createdAt: 'createdAt'
+  summaryText: 'summaryText'
 } as const
 
 export type SummaryScalarFieldEnum = (typeof SummaryScalarFieldEnum)[keyof typeof SummaryScalarFieldEnum]
