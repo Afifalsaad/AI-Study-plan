@@ -21,7 +21,6 @@ const Pdf = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const user = session?.status == "authenticated";
-  console.log(session?.data?.user?.id);
 
   const [authMode, setAuthMode] = useState<"login" | "register" | null>(null);
 

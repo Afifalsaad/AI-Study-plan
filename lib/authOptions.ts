@@ -1,6 +1,7 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import type { DefaultSession, NextAuthOptions, User } from "next-auth";
+import type { DefaultSession, NextAuthOptions, Session, User } from "next-auth";
+import type { JWT } from "next-auth/jwt";
 import GitHubProvider from "next-auth/providers/github";
 import { loginUser } from "@/actions/server/auth";
 import { prisma } from "./prisma";
@@ -95,26 +96,32 @@ const authOptions = {
       return true;
     },
     async jwt({ token }) {
+      if (!token?.email) {
+        return token;
+      }
 
-      if (token.email) {
-        const dbUser = await prisma.user.findUnique({
-          where: {
-            email: token.email,
-          },
-        });
+      const dbUser = await prisma.user.findUnique({
+        where: {
+          email: token.email,
+        },
+      });
 
-        if (dbUser) {
-          token.id = String(dbUser.id);
-        }
+      if (dbUser) {
+        token.id = String(dbUser.id);
+      } else {
+        // User was deleted from DB — invalidate the session
+        return null as unknown as JWT;
       }
 
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id ?? "";
+      if (token.id) {
+        session.user.id = token.id;
+      } else {
+        // No valid user ID — return null to clear the session
+        return null as unknown as Session;
       }
-
       return session;
     },
   },

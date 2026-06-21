@@ -5,6 +5,7 @@ import type { SummaryModel } from "@/prisma/generated/models/Summary";
 import Sidebar, { Conversation, Message } from "@/components/Summary/Sidebar";
 import ChatInbox from "@/components/Summary/ChatInbox";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 
 const SummaryWrapper = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -12,6 +13,8 @@ const SummaryWrapper = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConv, setActiveConv] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const session = useSession();
+  console.log(session);
 
   // Load conversations from DB on mount
   useEffect(() => {
