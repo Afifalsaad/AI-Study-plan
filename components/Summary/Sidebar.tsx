@@ -41,6 +41,8 @@ interface SidebarProps {
   conversations: Conversation[];
   activeConv: Conversation | null;
   onSelectConv: (conv: Conversation) => void;
+  search: string;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const Sidebar = ({
@@ -49,6 +51,8 @@ const Sidebar = ({
   conversations,
   onSelectConv,
   loading,
+  search,
+  setSearch,
 }: SidebarProps) => {
   return (
     <>
@@ -105,6 +109,8 @@ const Sidebar = ({
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search chat or document..."
                 className="w-full pl-9 pr-4 py-2 bg-slate-100 dark:bg-slate-800/60 rounded-xl text-sm border-0 focus:ring-2 focus:ring-indigo-500/50 outline-hidden transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
               />

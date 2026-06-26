@@ -5,7 +5,6 @@ import type { SummaryModel } from "@/prisma/generated/models/Summary";
 import Sidebar, { Conversation, Message } from "@/components/Summary/Sidebar";
 import ChatInbox from "@/components/Summary/ChatInbox";
 import axios from "axios";
-import { useSession } from "next-auth/react";
 
 const SummaryWrapper = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -13,16 +12,15 @@ const SummaryWrapper = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConv, setActiveConv] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const session = useSession();
-  console.log(session);
+  const [search, setSearch] = useState("");
+  console.log(search);
 
   // Load conversations from DB on mount
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
-        // const response = await fetch("/api/summarize");
-        const response = await axios.get("/api/summarize");
+        const response = await axios.get(`/api/summarize?search=${search}`);
         if (!response.data) {
           throw new Error("Failed to fetch summaries");
         }
@@ -88,7 +86,7 @@ const SummaryWrapper = () => {
       }
     };
     loadData();
-  }, []);
+  }, [search]);
 
   // Persist messages to localStorage whenever they change
   useEffect(() => {
@@ -159,6 +157,8 @@ const SummaryWrapper = () => {
         activeConv={activeConv}
         loading={loading}
         onSelectConv={handleSelectConv}
+        search={search}
+        setSearch={setSearch}
       />
 
       {/* CHAT INBOX MAIN CONTAINER */}

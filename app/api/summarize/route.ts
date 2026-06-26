@@ -76,7 +76,9 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const search = req.nextUrl.searchParams.get("search");
+  console.log("from GET function", search);
   const session = await getServerSession(authOptions);
   const userIdValue = session?.user?.id;
   const userId =
@@ -86,7 +88,13 @@ export async function GET() {
   try {
     const summaries = await prisma.summary.findMany({
       where: {
-        userId: userId,
+        userId: userId!,
+        ...(search && {
+          title: {
+            contains: search,
+            mode: "insensitive",
+          },
+        }),
       },
     });
     return NextResponse.json(summaries);
