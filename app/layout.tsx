@@ -4,6 +4,19 @@ import { cn } from "@/lib/utils";
 import Navbar from "../components/Navbar";
 import { ThemeProvider } from "../components/ThemeProvider";
 import NextAuthProvider from "@/components/providers/NextAuthProviders";
+import { Plus_Jakarta_Sans, Playfair_Display, Inter } from "next/font/google";
+
+const inter = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-inter",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-heading",
+});
 
 export const metadata: Metadata = {
   title: "StudyAI - AI-Powered Study Assistant",
@@ -22,7 +35,12 @@ export default function RootLayout({
       <html
         lang="en"
         suppressHydrationWarning
-        className={cn("h-full", "antialiased")}>
+        className={cn(
+          "h-full",
+          "antialiased",
+          inter.variable,
+          playfair.variable
+        )}>
         <head>
           <script
             dangerouslySetInnerHTML={{

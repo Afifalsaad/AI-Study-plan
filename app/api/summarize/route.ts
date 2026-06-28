@@ -78,7 +78,6 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   const search = req.nextUrl.searchParams.get("search");
-  console.log("from GET function", search);
   const session = await getServerSession(authOptions);
   const userIdValue = session?.user?.id;
   const userId =

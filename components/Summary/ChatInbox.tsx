@@ -42,7 +42,6 @@ const ChatInbox = ({
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -126,14 +125,23 @@ const ChatInbox = ({
       ) : (
         <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50 dark:bg-slate-950/80 ">
           {/* System Notification */}
-          <div className="flex justify-center">
-            <div className="bg-indigo-50/80 dark:bg-indigo-950/30 border border-indigo-100/50 dark:border-indigo-900/20 text-indigo-900 dark:text-indigo-300 text-xs px-4 py-2 rounded-2xl flex items-center gap-2 shadow-xs">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 animate-pulse" />
-              <span>
-                PDF loaded successfully. Initial overview & summary generated.
-              </span>
+          {messages.length == 0 ? (
+            <div className="flex justify-center">
+              <div className="bg-indigo-50/80 dark:bg-indigo-950/30 border border-indigo-100/50 dark:border-indigo-900/20 text-indigo-900 dark:text-indigo-300 text-xs px-4 py-2 rounded-2xl flex items-center gap-2 shadow-xs">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 animate-pulse" />
+                <span>No PDF uploaded. Upload a PDF for get summary.</span>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="flex justify-center">
+              <div className="bg-indigo-50/80 dark:bg-indigo-950/30 border border-indigo-100/50 dark:border-indigo-900/20 text-indigo-900 dark:text-indigo-300 text-xs px-4 py-2 rounded-2xl flex items-center gap-2 shadow-xs">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 animate-pulse" />
+                <span>
+                  PDF loaded successfully. Initial overview & summary generated.
+                </span>
+              </div>
+            </div>
+          )}
 
           {messages.map((message) => {
             const isAI = message.sender === "ai";

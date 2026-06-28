@@ -95,22 +95,31 @@ const authOptions = {
       }
       return true;
     },
-    async jwt({ token }) {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = String(user.id);
+      }
+
       if (!token?.email) {
         return token;
       }
 
-      const dbUser = await prisma.user.findUnique({
-        where: {
-          email: token.email,
-        },
-      });
+      try {
+        const dbUser = await prisma.user.findUnique({
+          where: {
+            email: token.email,
+          },
+        });
 
-      if (dbUser) {
-        token.id = String(dbUser.id);
-      } else {
-        // User was deleted from DB — invalidate the session
-        return null as unknown as JWT;
+        if (dbUser) {
+          token.id = String(dbUser.id);
+        } else {
+          // User was deleted from DB — invalidate the session
+          return null as unknown as JWT;
+        }
+      } catch (error) {
+        console.error("Prisma error in jwt callback on session check:", error);
+        // Fall back to existing token to prevent logging out on DB connection issues
       }
 
       return token;

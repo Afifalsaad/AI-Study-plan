@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 import LoginForm from "./LoginForm";
@@ -10,6 +10,30 @@ import { AvatarDropdown } from "./Avatar";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+
+function AuthRedirectHandler({
+  setAuthMode,
+}: {
+  setAuthMode: (mode: "login" | "register" | null) => void;
+}) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (searchParams.get("login") === "true") {
+      setAuthMode("login");
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("login");
+      const cleanUrl =
+        pathname + (params.toString() ? `?${params.toString()}` : "");
+      router.replace(cleanUrl);
+    }
+  }, [searchParams, pathname, router, setAuthMode]);
+
+  return null;
+}
 
 const Navbar = () => {
   const session = useSession();
@@ -19,6 +43,9 @@ const Navbar = () => {
 
   return (
     <nav className="border-b border-border bg-white/80 dark:bg-slate-950 backdrop-blur-md sticky top-0 z-50 transition-colors duration-700 ease-in-out">
+      <Suspense fallback={null}>
+        <AuthRedirectHandler setAuthMode={setAuthMode} />
+      </Suspense>
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2">
@@ -54,11 +81,13 @@ const Navbar = () => {
           <ThemeToggle />
 
           {session?.status === "loading" ? (
-            <div className="flex items-center justify-center gap-4 [--radius:1.2rem]">
-              <Badge variant="outline">
-                <Spinner data-icon="inline-start" />
-              </Badge>
-            </div>
+            <>
+              <Button
+                variant="ghost"
+                className="h-10 w-26 animate-pulse rounded-md border border-input bg-muted/50 dark:bg-muted/20"></Button>
+
+              <div className="h-10 w-28 animate-pulse rounded-md bg-indigo-100 dark:bg-indigo-950/50" />
+            </>
           ) : isAuthenticated ? (
             <AvatarDropdown />
           ) : (
