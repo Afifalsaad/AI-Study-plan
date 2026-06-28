@@ -13,7 +13,6 @@ const SummaryWrapper = () => {
   const [activeConv, setActiveConv] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [search, setSearch] = useState("");
-  console.log(search);
 
   // Load conversations from DB on mount
   useEffect(() => {

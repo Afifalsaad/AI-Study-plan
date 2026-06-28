@@ -37,6 +37,7 @@ function AuthRedirectHandler({
 
 const Navbar = () => {
   const session = useSession();
+  console.log(session);
   const isAuthenticated = session.status === "authenticated";
 
   const [authMode, setAuthMode] = useState<"login" | "register" | null>(null);
@@ -60,9 +61,9 @@ const Navbar = () => {
         {/* Navigation Links */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600 dark:text-gray-300">
           <Link
-            href="#features"
+            href="/Summary"
             className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-            Features
+            Summary
           </Link>
           <Link
             href="#how-it-works"
