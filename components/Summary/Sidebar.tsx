@@ -20,7 +20,7 @@ export interface Conversation {
   summaryText?: string;
 }
 
-export interface Message {
+export interface Messages {
   id: string;
   sender: "ai" | "user";
   text: string;

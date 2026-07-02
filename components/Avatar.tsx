@@ -36,7 +36,10 @@ export function AvatarDropdown() {
           size="icon"
           className="rounded-full hover:cursor-pointer">
           <Avatar>
-            <AvatarImage src={image} alt="User avatar" />
+            <AvatarImage
+              src={image || "/user.png"}
+              alt="User avatar"
+            />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </Button>

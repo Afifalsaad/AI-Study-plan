@@ -1,11 +1,19 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
+import { Bubble, BubbleContent, BubbleGroup } from "@/components/ui/bubble";
+import {
+  Message,
+  MessageAvatar,
+  MessageContent,
+  MessageGroup,
+} from "@/components/ui/message";
 import {
   Bot,
   CheckCheck,
   Clock,
   Download,
-  FileText,
   Menu,
   Mic,
   MoreVertical,
@@ -18,15 +26,16 @@ import {
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { Conversation, Message } from "./Sidebar";
+import { Conversation, Messages } from "./Sidebar";
 import Skeleton from "../Skeleton";
+import { useSession } from "next-auth/react";
 
 interface ChatInboxProps {
   sidebarOpen: boolean;
   loading: boolean;
   setSidebarOpen: (open: boolean) => void;
   activeConv: Conversation | null;
-  messages: Message[];
+  messages: Messages[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
@@ -38,12 +47,15 @@ const ChatInbox = ({
   setMessages,
   loading,
 }: ChatInboxProps) => {
+  // console.log(messages);
+  const session = useSession();
+  const userImg = session?.data?.user?.image;
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
   }, [messages]);
 
   const [inputText, setInputText] = useState("");
@@ -79,7 +91,7 @@ const ChatInbox = ({
           </button>
 
           <div className="p-2 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-lg shrink-0 hidden xs:block">
-            <FileText className="w-5 h-5" />
+            {/* <FileText className="w-5 h-5" /> */}
           </div>
           {loading ? (
             <Skeleton></Skeleton>
@@ -123,7 +135,7 @@ const ChatInbox = ({
       {loading ? (
         <div className="flex-1"></div>
       ) : (
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50 dark:bg-slate-950/80 ">
+        <div className="flex-1 overflow-y-auto p-6 bg-slate-50 dark:bg-slate-950/80 ">
           {/* System Notification */}
           {messages.length == 0 ? (
             <div className="flex justify-center">
@@ -143,128 +155,62 @@ const ChatInbox = ({
             </div>
           )}
 
-          {messages.map((message) => {
-            const isAI = message.sender === "ai";
-            return (
-              <div
-                key={message.id}
-                className={`flex gap-3 max-w-[85%] ${
-                  isAI ? "mr-auto" : "ml-auto flex-row-reverse"
-                }`}>
-                {/* Avatar */}
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-xs ${
-                    isAI
-                      ? "bg-indigo-600 text-white"
-                      : "bg-linear-to-tr from-emerald-500 to-teal-500 text-white"
-                  }`}>
-                  {isAI ? (
-                    <Bot className="w-4 h-4" />
-                  ) : (
-                    <User className="w-4 h-4" />
-                  )}
-                </div>
+          {(() => {
+            const groups: { sender: string; messages: Messages[] }[] = [];
+            messages.forEach((msg) => {
+              const lastGroup = groups[groups.length - 1];
+              if (lastGroup && lastGroup.sender === msg.sender) {
+                lastGroup.messages.push(msg);
+              } else {
+                groups.push({
+                  sender: msg.sender,
+                  messages: [msg],
+                });
+              }
+            });
 
-                {/* Message Bubble */}
-                <div className="space-y-1">
-                  <div
-                    className={`rounded-2xl p-4 shadow-sm ${
-                      isAI
-                        ? "bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800/80 text-slate-800 dark:text-slate-100"
-                        : "bg-indigo-600 text-white"
-                    }`}>
-                    {/* Render Rich AI Summary Card if present */}
-                    {isAI && message.isSummary && message.summaryData ? (
-                      <div className="space-y-4">
-                        <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
-                          <Bot className="w-4 h-4" /> AI Summary & Breakdown
-                        </p>
-
-                        {/* 1. Overview */}
-                        <div className="space-y-1 bg-slate-50 dark:bg-slate-950/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800/50">
-                          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                            📌 Document Overview
-                          </h4>
-                          <p className="text-sm leading-relaxed">
-                            {message.summaryData.overview}
-                          </p>
-                        </div>
-
-                        {/* 2. Key Takeaways */}
-                        <div className="space-y-1.5">
-                          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                            🔑 Key Takeaways
-                          </h4>
-                          <ul className="list-disc pl-5 space-y-1 text-sm">
-                            {message.summaryData.keyPoints.map((pt, idx) => (
-                              <li key={idx} className="leading-relaxed">
-                                {pt}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        {/* 3. Core Concepts */}
-                        <div className="space-y-2">
-                          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                            💡 Core Concepts & Terminology
-                          </h4>
-                          <div className="grid grid-cols-1 gap-2">
-                            {message.summaryData.concepts.map(
-                              (concept, idx) => (
-                                <div
-                                  key={idx}
-                                  className="p-2.5 rounded-lg bg-indigo-50/30 dark:bg-indigo-950/20 border border-indigo-100/20 dark:border-indigo-900/10">
-                                  <span className="font-semibold text-xs text-indigo-700 dark:text-indigo-300 block mb-0.5">
-                                    {concept.title}
-                                  </span>
-                                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                                    {concept.desc}
-                                  </p>
-                                </div>
-                              )
+            return groups.map((group, groupIdx) => {
+              const isAI = group.sender === "ai";
+              return (
+                <div key={groupIdx} className="flex w-full flex-col">
+                  <Message className="w-full" align={isAI ? "start" : "end"}>
+                    <MessageAvatar
+                      className={isAI ? "bg-transparent border-none" : ""}>
+                      <Avatar className="">
+                        {isAI ? (
+                          <AvatarImage src={"/bot.png"} alt="@avatar" />
+                        ) : (
+                          <AvatarImage
+                            src={userImg || "/user.png"}
+                            alt="@avatar"
+                          />
+                        )}
+                      </Avatar>
+                    </MessageAvatar>
+                    <MessageContent>
+                      <MessageGroup>
+                        {group.messages.map((message) => (
+                          <Bubble
+                            key={message.id}
+                            className={cn(
+                              "*:data-[slot=bubble-content]:rounded-3xl!",
+                              !isAI &&
+                                "*:data-[slot=bubble-content]:bg-blue-100!"
                             )}
-                          </div>
-                        </div>
-
-                        {/* 4. Next Steps */}
-                        <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-1.5">
-                          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                            📝 Recommended Next Steps
-                          </h4>
-                          <ul className="list-decimal pl-5 space-y-1 text-xs text-slate-600 dark:text-slate-400">
-                            {message.summaryData.nextSteps.map((step, idx) => (
-                              <li key={idx}>{step}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    ) : isAI ? (
-                      <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:text-indigo-700 dark:prose-headings:text-indigo-300 prose-headings:text-base prose-headings:font-bold prose-p:leading-relaxed prose-li:leading-relaxed prose-strong:text-indigo-600 dark:prose-strong:text-indigo-400 prose-ul:my-1 prose-ol:my-1 prose-p:my-1.5">
-                        <ReactMarkdown>{message.text}</ReactMarkdown>
-                      </div>
-                    ) : (
-                      <p className="text-sm whitespace-pre-line leading-relaxed">
-                        {message.text}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Time and Status Indicators */}
-                  <div
-                    className={`flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-slate-500 ${
-                      isAI ? "" : "justify-end"
-                    }`}>
-                    <Clock className="w-3 h-3" />
-                    <span>{message.time}</span>
-                    {!isAI && (
-                      <CheckCheck className="w-3.5 h-3.5 text-indigo-500" />
-                    )}
-                  </div>
+                            variant="outline"
+                            align={isAI ? "start" : "end"}>
+                            <BubbleContent className="w-full">
+                              {message.text}
+                            </BubbleContent>
+                          </Bubble>
+                        ))}
+                      </MessageGroup>
+                    </MessageContent>
+                  </Message>
                 </div>
-              </div>
-            );
-          })}
+              );
+            });
+          })()}
           <div ref={messagesEndRef} />
         </div>
       )}

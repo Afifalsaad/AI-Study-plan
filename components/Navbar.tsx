@@ -7,8 +7,6 @@ import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import { useSession } from "next-auth/react";
 import { AvatarDropdown } from "./Avatar";
-import { Badge } from "@/components/ui/badge";
-import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
