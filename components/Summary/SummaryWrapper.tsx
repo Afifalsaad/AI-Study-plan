@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { SummaryModel } from "@/prisma/generated/models/Summary";
-import Sidebar, { Conversation, Message } from "@/components/Summary/Sidebar";
+import Sidebar, { Conversation, Messages } from "@/components/Summary/Sidebar";
 import ChatInbox from "@/components/Summary/ChatInbox";
 import axios from "axios";
 
@@ -11,7 +11,7 @@ const SummaryWrapper = () => {
   const [loading, setLoading] = useState(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConv, setActiveConv] = useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Messages[]>([]);
   const [search, setSearch] = useState("");
 
   // Load conversations from DB on mount
@@ -65,7 +65,7 @@ const SummaryWrapper = () => {
         setActiveConv(targetConv);
 
         if (targetConv) {
-          const initialMessage: Message = {
+          const initialMessage: Messages = {
             id: `msg_summary_${targetConv.id}`,
             sender: "ai",
             text: targetConv.summaryText || "",
@@ -133,7 +133,7 @@ const SummaryWrapper = () => {
     // Save active conversation ID to localStorage for persistence
     localStorage.setItem("active_conv_id", conv.id);
 
-    const initialMessage: Message = {
+    const initialMessage: Messages = {
       id: `msg_summary_${conv.id}`,
       sender: "ai",
       text: conv.summaryText || "",

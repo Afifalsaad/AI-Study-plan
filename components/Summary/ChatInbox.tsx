@@ -1,8 +1,8 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { Bubble, BubbleContent, BubbleGroup } from "@/components/ui/bubble";
+import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import {
   Message,
   MessageAvatar,
@@ -10,9 +10,6 @@ import {
   MessageGroup,
 } from "@/components/ui/message";
 import {
-  Bot,
-  CheckCheck,
-  Clock,
   Download,
   Menu,
   Mic,
@@ -22,10 +19,8 @@ import {
   Share2,
   Smile,
   Sparkles,
-  User,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
 import { Conversation, Messages } from "./Sidebar";
 import Skeleton from "../Skeleton";
 import { useSession } from "next-auth/react";
@@ -36,7 +31,7 @@ interface ChatInboxProps {
   setSidebarOpen: (open: boolean) => void;
   activeConv: Conversation | null;
   messages: Messages[];
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  setMessages: React.Dispatch<React.SetStateAction<Messages[]>>;
 }
 
 const ChatInbox = ({
@@ -50,21 +45,29 @@ const ChatInbox = ({
   // console.log(messages);
   const session = useSession();
   const userImg = session?.data?.user?.image;
+  const shouldScrollRef = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!shouldScrollRef.current) return;
+
     messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",
     });
+
+    shouldScrollRef.current = false;
   }, [messages]);
 
   const [inputText, setInputText] = useState("");
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!inputText.trim()) return;
 
-    const newMsg: Message = {
+    shouldScrollRef.current = true;
+
+    const newMsg: Messages = {
       id: `m_${Date.now()}`,
       sender: "user",
       text: inputText,
@@ -73,6 +76,7 @@ const ChatInbox = ({
         minute: "2-digit",
       }),
     };
+
     setMessages((prev) => [...prev, newMsg]);
     setInputText("");
   };
