@@ -42,7 +42,6 @@ const ChatInbox = ({
   setMessages,
   loading,
 }: ChatInboxProps) => {
-  // console.log(messages);
   const session = useSession();
   const userImg = session?.data?.user?.image;
   const shouldScrollRef = useRef(false);
