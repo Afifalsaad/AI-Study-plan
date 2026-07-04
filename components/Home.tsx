@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Pdf from "./Pdf";
 import { useRef } from "react";
+import Link from "next/link";
 
 export default function Home() {
   const uploadZoneRef = useRef<HTMLDivElement>(null);
@@ -102,17 +103,19 @@ export default function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button
-                  size="lg"
-                  className="text-base px-7 rounded-xl bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 shadow-lg shadow-indigo-500/20">
-                  Create Study Plan
-                </Button>
+                <Link href="/study_plan">
+                  <Button
+                    size="lg"
+                    className="text-base px-7 rounded-xl bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 shadow-lg shadow-indigo-500/20 hover:cursor-pointer">
+                    Create Study Plan
+                  </Button>
+                </Link>
 
                 <Button
                   size="lg"
                   variant="outline"
                   onClick={scrollToUploadZone}
-                  className="text-base px-7 rounded-xl dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900">
+                  className="text-base px-7 rounded-xl dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900 hover:cursor-pointer">
                   Upload PDF
                 </Button>
               </div>

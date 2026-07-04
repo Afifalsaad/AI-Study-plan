@@ -35,7 +35,6 @@ function AuthRedirectHandler({
 
 const Navbar = () => {
   const session = useSession();
-  console.log(session);
   const isAuthenticated = session.status === "authenticated";
 
   const [authMode, setAuthMode] = useState<"login" | "register" | null>(null);
@@ -47,14 +46,16 @@ const Navbar = () => {
       </Suspense>
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">S</span>
+        <Link href="/">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xl">S</span>
+            </div>
+            <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+              StudyAI
+            </span>
           </div>
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
-            StudyAI
-          </span>
-        </div>
+        </Link>
 
         {/* Navigation Links */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600 dark:text-gray-300">
