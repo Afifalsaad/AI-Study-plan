@@ -97,7 +97,7 @@ const StudyInput = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(res);
+      console.log(res?.data, res);
       // router.push("/overview");
     } catch (error) {
       console.log(error);

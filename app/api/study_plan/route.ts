@@ -10,7 +10,6 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  console.log("from server", session?.user?.id);
   try {
     const formData = await req.formData();
 
@@ -153,8 +152,6 @@ Important:
       },
     });
 
-    console.log("Saved Study Plan Data:", studyPlanData);
-
     return NextResponse.json({
       success: true,
       // data: studyPlan,
@@ -167,5 +164,26 @@ Important:
         error instanceof Error ? error.message : "An unknown error occurred",
       status: 500,
     });
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
+    console.log("user ID", userId);
+
+    const res = await prisma.studyPlan.findMany({
+      where: {
+        userId: Number(userId),
+      },
+    });
+    console.log('from get APi', res)
+    return NextResponse.json({
+      success: true,
+      data: res,
+    });
+  } catch (error) {
+    console.log(error);
   }
 }
