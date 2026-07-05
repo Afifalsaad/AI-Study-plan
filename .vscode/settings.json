@@ -4,6 +4,7 @@
         "autoincrement",
         "Conv",
         "Convs",
+        "genai",
         "Swal",
         "sweetalert"
     ]

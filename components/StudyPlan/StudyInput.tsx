@@ -35,7 +35,10 @@ import {
   FileText,
   CheckCircle2,
   CheckCircle,
+  Form,
 } from "lucide-react";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 
 interface FormData {
   syllabusPdf: File | null;
@@ -48,10 +51,13 @@ interface FormData {
   weakTopics: string;
   syllabus: string;
   goal: string;
+  userId: string;
 }
 
 const StudyInput = () => {
   const [open, setOpen] = useState(false);
+  const session = useSession();
+  const userId = session?.data?.user?.id || null;
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -64,6 +70,7 @@ const StudyInput = () => {
     syllabus: "",
     syllabusPdf: null,
     goal: "",
+    userId: userId || "",
   });
 
   const handleChange = (field: keyof FormData, value: string | File | null) => {
@@ -76,7 +83,21 @@ const StudyInput = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     setOpen(true);
-    console.log(formData);
+  };
+
+  const handleGenerate = async () => {
+    const submitData = new FormData();
+    submitData.append("userId", formData.userId);
+    try {
+      const res = await axios.post("api/study_plan", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(formData, res);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -430,7 +451,9 @@ const StudyInput = () => {
               Edit Information
             </Button>
 
-            <Button className="rounded-xl bg-indigo-600 hover:bg-indigo-700">
+            <Button
+              onClick={handleGenerate}
+              className="rounded-xl bg-indigo-600 hover:bg-indigo-700">
               Confirm & Generate AI Plan
             </Button>
           </DialogFooter>
