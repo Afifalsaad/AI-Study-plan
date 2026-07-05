@@ -10,7 +10,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  console.log(session);
+  console.log("from server", session?.user?.id);
   try {
     const formData = await req.formData();
 
@@ -133,23 +133,23 @@ Important:
       .trim();
 
     const studyPlan = JSON.parse(cleanedText);
-    console.log("Study Plan:", studyPlan);
+    // console.log("Study Plan:", studyPlan);
 
     // Save generated data to DB
-    const studyPlanData = await prisma.studyPlan.create({
-      data: {
+    const studyPlanData = await prisma.studyPlan.upsert({
+      where: {
+        userId_examName: {
+          userId: Number(session?.user?.id),
+          examName: studyPlan.summary?.examName || "Untitled Exam",
+        },
+      },
+      update: {
+        data: studyPlan,
+      },
+      create: {
         userId: Number(session?.user?.id),
         examName: studyPlan.summary?.examName || "Untitled Exam",
         data: studyPlan,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
       },
     });
 
@@ -157,10 +157,12 @@ Important:
 
     return NextResponse.json({
       success: true,
-      data: studyPlan,
+      // data: studyPlan,
     });
   } catch (error) {
+    console.log(error);
     return NextResponse.json({
+      success: false,
       error:
         error instanceof Error ? error.message : "An unknown error occurred",
       status: 500,

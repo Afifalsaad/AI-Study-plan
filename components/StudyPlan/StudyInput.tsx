@@ -35,9 +35,11 @@ import {
   FileText,
   CheckCircle2,
   CheckCircle,
+  Loader2,
 } from "lucide-react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface FormData {
   syllabusPdf: File | null;
@@ -57,7 +59,8 @@ const StudyInput = () => {
   const [open, setOpen] = useState(false);
   const session = useSession();
   const userId = session?.data?.user?.id || null;
-  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -87,22 +90,33 @@ const StudyInput = () => {
 
   const handleGenerate = async () => {
     try {
+      setLoading(true);
+      setOpen(false);
       const res = await axios.post("api/study_plan", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(res?.data.data);
-      setData(res?.data.data);
-      setOpen(true);
+      console.log(res);
+      // router.push("/overview");
     } catch (error) {
       console.log(error);
     } finally {
+      setLoading(false);
     }
   };
 
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-gray-950 transition-colors duration-700">
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent backdrop-blur-[3px]">
+          <div className="bg-white p-6 rounded-lg flex items-center gap-3">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span>Generating Study Plan...</span>
+          </div>
+        </div>
+      )}
+
       <section className="relative overflow-hidden py-12 md:py-16">
         {/* Background Decoration */}
         <div className="absolute inset-0 -z-10">

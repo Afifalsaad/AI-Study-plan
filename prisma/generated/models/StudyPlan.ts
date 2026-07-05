@@ -235,6 +235,7 @@ export type StudyPlanOrderByWithRelationInput = {
 
 export type StudyPlanWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  userId_examName?: Prisma.StudyPlanUserIdExamNameCompoundUniqueInput
   AND?: Prisma.StudyPlanWhereInput | Prisma.StudyPlanWhereInput[]
   OR?: Prisma.StudyPlanWhereInput[]
   NOT?: Prisma.StudyPlanWhereInput | Prisma.StudyPlanWhereInput[]
@@ -244,7 +245,7 @@ export type StudyPlanWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"StudyPlan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"StudyPlan"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-}, "id">
+}, "id" | "userId_examName">
 
 export type StudyPlanOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -342,6 +343,11 @@ export type StudyPlanListRelationFilter = {
 
 export type StudyPlanOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type StudyPlanUserIdExamNameCompoundUniqueInput = {
+  userId: number
+  examName: string
 }
 
 export type StudyPlanCountOrderByAggregateInput = {
