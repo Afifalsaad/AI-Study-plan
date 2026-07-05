@@ -1,11 +1,16 @@
 "use server";
 
+import authOptions from "@/lib/authOptions";
+import { prisma } from "@/lib/prisma";
 import { GoogleGenAI } from "@google/genai";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  console.log(session);
   try {
     const formData = await req.formData();
 
@@ -97,7 +102,6 @@ Important:
 - Make the study plan practical, realistic, and actionable.`;
 
     // Generate content using Gemini 2.5 Flash
-
     const contents: Array<
       { text: string } | { inlineData: { mimeType: string; data: string } }
     > = [
@@ -115,6 +119,7 @@ Important:
       });
     }
 
+    // Generate the study plan using the AI model
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents,
@@ -128,6 +133,27 @@ Important:
       .trim();
 
     const studyPlan = JSON.parse(cleanedText);
+    console.log("Study Plan:", studyPlan);
+
+    // Save generated data to DB
+    const studyPlanData = await prisma.studyPlan.create({
+      data: {
+        userId: Number(session?.user?.id),
+        examName: studyPlan.summary?.examName || "Untitled Exam",
+        data: studyPlan,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    console.log("Saved Study Plan Data:", studyPlanData);
 
     return NextResponse.json({
       success: true,

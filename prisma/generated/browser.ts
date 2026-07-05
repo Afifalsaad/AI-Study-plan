@@ -27,3 +27,8 @@ export type User = Prisma.UserModel
  * 
  */
 export type Summary = Prisma.SummaryModel
+/**
+ * Model StudyPlan
+ * 
+ */
+export type StudyPlan = Prisma.StudyPlanModel

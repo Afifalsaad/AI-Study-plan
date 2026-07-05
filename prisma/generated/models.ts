@@ -10,4 +10,5 @@
  */
 export type * from './models/User'
 export type * from './models/Summary'
+export type * from './models/StudyPlan'
 export type * from './commonInputTypes'

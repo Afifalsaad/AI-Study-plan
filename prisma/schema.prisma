@@ -16,6 +16,8 @@ model User {
   updatedAt DateTime @default(now()) @updatedAt
   image     String?
   provider  String?
+
+  studyPlans StudyPlan[]
 }
 
 model Summary {
@@ -26,4 +28,17 @@ model Summary {
   fileName    String
   fileSize    String
   summaryText String
+}
+
+model StudyPlan {
+  id        String   @id @default(cuid())
+  userId    Int
+  examName  String
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

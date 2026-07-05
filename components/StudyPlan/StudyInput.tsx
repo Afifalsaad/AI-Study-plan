@@ -35,7 +35,6 @@ import {
   FileText,
   CheckCircle2,
   CheckCircle,
-  Form,
 } from "lucide-react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -58,6 +57,7 @@ const StudyInput = () => {
   const [open, setOpen] = useState(false);
   const session = useSession();
   const userId = session?.data?.user?.id || null;
+  const [data, setData] = useState([]);
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -86,17 +86,18 @@ const StudyInput = () => {
   };
 
   const handleGenerate = async () => {
-    const submitData = new FormData();
-    submitData.append("userId", formData.userId);
     try {
       const res = await axios.post("api/study_plan", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(formData, res);
+      console.log(res?.data.data);
+      setData(res?.data.data);
+      setOpen(true);
     } catch (error) {
       console.log(error);
+    } finally {
     }
   };
 
@@ -206,7 +207,7 @@ const StudyInput = () => {
                           placeholder="Example: Afif"
                           value={formData.name}
                           onChange={(e) => handleChange("name", e.target.value)}
-                          className="h-12 rounded-xl "
+                          className="h-12 rounded-xl border-b-black/20"
                         />
                       </div>
 
@@ -218,7 +219,7 @@ const StudyInput = () => {
                           onChange={(e) =>
                             handleChange("examName", e.target.value)
                           }
-                          className="h-12 rounded-xl"
+                          className="h-12 rounded-xl border-b-black/20"
                         />
                       </div>
                     </div>
@@ -244,7 +245,7 @@ const StudyInput = () => {
                           onValueChange={(value) =>
                             handleChange("dailyTime", value)
                           }>
-                          <SelectTrigger className="h-12 rounded-xl">
+                          <SelectTrigger className="h-12 rounded-xl border-b-black/20">
                             <SelectValue placeholder="Select daily time" />
                           </SelectTrigger>
                           <SelectContent>
@@ -267,7 +268,7 @@ const StudyInput = () => {
                           onValueChange={(value) =>
                             handleChange("level", value)
                           }>
-                          <SelectTrigger className="h-12 rounded-xl">
+                          <SelectTrigger className="h-14 rounded-xl border-b-black/20">
                             <SelectValue placeholder="Select your level" />
                           </SelectTrigger>
                           <SelectContent>
@@ -302,7 +303,7 @@ const StudyInput = () => {
                         onChange={(e) =>
                           handleChange("weakTopics", e.target.value)
                         }
-                        className="min-h-24 rounded-xl"
+                        className="min-h-5 rounded-xl border-b-black/20"
                       />
                     </div>
 
@@ -317,7 +318,7 @@ const StudyInput = () => {
                         onChange={(e) =>
                           handleChange("syllabus", e.target.value)
                         }
-                        className="min-h-32 rounded-xl"
+                        className="min-h-6 border-b-black/20 rounded-xl"
                       />
 
                       <div className="relative rounded-2xl border border-dashed border-indigo-300 bg-indigo-50/50 p-5 transition hover:bg-indigo-50 dark:border-indigo-800 dark:bg-indigo-950/20 dark:hover:bg-indigo-950/30">
@@ -373,7 +374,7 @@ const StudyInput = () => {
                         placeholder="Example: I want to finish full syllabus before exam and revise twice."
                         value={formData.goal}
                         onChange={(e) => handleChange("goal", e.target.value)}
-                        className="min-h-24 rounded-xl"
+                        className="min-h-5 border-b-black/20 rounded-xl"
                       />
                     </div>
 
@@ -453,12 +454,15 @@ const StudyInput = () => {
 
             <Button
               onClick={handleGenerate}
-              className="rounded-xl bg-indigo-600 hover:bg-indigo-700">
+              className="rounded-xl bg-indigo-600 hover:bg-indigo-700 hover:cursor-pointer">
               Confirm & Generate AI Plan
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Plan over view */}
+      {/* <PlanOverView data={data} /> */}
     </main>
   );
 };
