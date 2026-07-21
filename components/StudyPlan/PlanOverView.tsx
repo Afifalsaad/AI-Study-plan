@@ -210,7 +210,6 @@ const SectionCard = ({
   description,
   icon,
   children,
-  accentColor = "indigo",
 }: {
   title: string;
   description?: string;
@@ -255,7 +254,7 @@ const StatCard = ({
 }) => {
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-gradient-to-br ${gradient} p-5 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-lg`}>
+      className={`relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-linear-to-br ${gradient} p-5 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-lg`}>
       <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white/60 dark:bg-black/20 backdrop-blur-sm">
         {icon}
       </div>
@@ -283,15 +282,6 @@ export default function PlanOverview() {
         setLoading(true);
 
         const res = await axios.get("/api/study_plan");
-
-        /**
-         * Supported API shapes:
-         * 1. { data: plan }
-         * 2. plan directly
-         * 3. { success: true, data: plan }
-         */
-        // API returns { success: true, data: StudyPlan[] } (findMany array)
-        // Each element has: { id, examName, createdAt, updatedAt, data: { summary, strategy, ... } }
         const planArray = res?.data?.data;
         const responsePlan = Array.isArray(planArray)
           ? planArray[0]
@@ -352,7 +342,7 @@ export default function PlanOverview() {
     <div className="min-h-screen bg-[#f8fafc] dark:bg-gray-950 transition-colors duration-700">
       <div className="mx-auto max-w-7xl space-y-6 p-4 md:p-6 lg:p-8">
         {/* ─── Hero Header ─────────────────────────────────────────── */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 dark:from-indigo-800 dark:via-indigo-900 dark:to-purple-900 text-white shadow-2xl shadow-indigo-500/30">
+        <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-indigo-500  to-purple-300 dark:from-indigo-800 dark:via-indigo-900 dark:to-purple-900 text-white shadow-2xl shadow-indigo-500/30">
           {/* Decorative blobs */}
           <div className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-purple-400/20 blur-3xl" />
           <div className="absolute -bottom-16 -left-16 h-64 w-64 rounded-full bg-indigo-300/20 blur-3xl" />
@@ -547,7 +537,7 @@ export default function PlanOverview() {
                     {strategy.recommendations.map((item, index) => (
                       <div
                         key={index}
-                        className="group rounded-2xl border border-gray-100 dark:border-gray-800 bg-gradient-to-br from-purple-50/60 to-white dark:from-purple-500/5 dark:to-gray-900 p-4 text-sm leading-relaxed transition-all duration-300 hover:border-purple-200 dark:hover:border-purple-800 hover:shadow-sm">
+                        className="group rounded-2xl border border-gray-100 dark:border-gray-800 bg-linear-to-br from-purple-50/60 to-white dark:from-purple-500/5 dark:to-gray-900 p-4 text-sm leading-relaxed transition-all duration-300 hover:border-purple-200 dark:hover:border-purple-800 hover:shadow-sm">
                         <div className="mb-2 flex items-center gap-2">
                           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-500/20 text-xs font-bold text-purple-600 dark:text-purple-400">
                             {index + 1}
@@ -609,7 +599,7 @@ export default function PlanOverview() {
                   key={index}
                   className="group relative overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-200 dark:hover:border-indigo-800">
                   {/* Top accent bar */}
-                  <div className="h-1 w-full bg-gradient-to-r from-indigo-500 to-purple-500" />
+                  <div className="h-1 w-full bg-linear-to-r from-indigo-500 to-purple-500" />
                   <div className="p-5">
                     <div className="mb-4 flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -645,7 +635,7 @@ export default function PlanOverview() {
                 <div
                   key={index}
                   className="group relative overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm transition-all duration-300 hover:border-emerald-200 dark:hover:border-emerald-800 hover:shadow-md hover:shadow-emerald-500/10">
-                  <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-emerald-400 to-teal-500 rounded-l-2xl" />
+                  <div className="absolute left-0 top-0 h-full w-1 bg-linear-to-b from-emerald-400 to-teal-500 rounded-l-2xl" />
                   <div className="pl-3">
                     <div className="mb-3 flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-500/20 text-sm font-bold text-emerald-600 dark:text-emerald-400">
@@ -682,7 +672,7 @@ export default function PlanOverview() {
               {revisionPlan.map((item, index) => (
                 <div
                   key={index}
-                  className="relative overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800 bg-gradient-to-br from-blue-50/60 to-white dark:from-blue-500/5 dark:to-gray-900 p-5 shadow-sm transition-all duration-300 hover:border-blue-200 dark:hover:border-blue-800 hover:-translate-y-1 hover:shadow-md hover:shadow-blue-500/10">
+                  className="relative overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800 bg-linear-to-br from-blue-50/60 to-white dark:from-blue-500/5 dark:to-gray-900 p-5 shadow-sm transition-all duration-300 hover:border-blue-200 dark:hover:border-blue-800 hover:-translate-y-1 hover:shadow-md hover:shadow-blue-500/10">
                   <div className="mb-3 flex items-center gap-3">
                     <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-500/20 text-sm font-bold text-blue-600 dark:text-blue-400">
                       {index + 1}
@@ -711,7 +701,7 @@ export default function PlanOverview() {
                 <div
                   key={index}
                   className="group overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm transition-all duration-500 hover:-translate-y-1.5 hover:shadow-lg hover:shadow-purple-500/10 hover:border-purple-200 dark:hover:border-purple-800">
-                  <div className="h-1 w-full bg-gradient-to-r from-purple-400 to-pink-400" />
+                  <div className="h-1 w-full bg-linear-to-r from-purple-400 to-pink-400" />
                   <div className="p-4">
                     <div className="mb-3 flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -746,7 +736,7 @@ export default function PlanOverview() {
               {tips.map((tip, index) => (
                 <div
                   key={index}
-                  className="group relative overflow-hidden rounded-2xl border border-amber-100 dark:border-amber-500/20 bg-gradient-to-br from-amber-50 to-white dark:from-amber-500/5 dark:to-gray-900 p-4 text-sm leading-relaxed shadow-sm transition-all duration-300 hover:border-amber-200 dark:hover:border-amber-500/40 hover:shadow-md hover:shadow-amber-500/10">
+                  className="group relative overflow-hidden rounded-2xl border border-amber-100 dark:border-amber-500/20 bg-linear-to-br from-amber-50 to-white dark:from-amber-500/5 dark:to-gray-900 p-4 text-sm leading-relaxed shadow-sm transition-all duration-300 hover:border-amber-200 dark:hover:border-amber-500/40 hover:shadow-md hover:shadow-amber-500/10">
                   <div className="mb-2.5 flex items-center gap-2">
                     <div className="flex h-7 w-7 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-500/20">
                       <Lightbulb className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />

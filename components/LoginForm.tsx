@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { signIn } from "next-auth/react";
 import Swal from "sweetalert2";
 import Image from "next/image";
+import { loginSchema } from "@/schema/loginSchema";
 
 interface LoginFormProps {
   isOpen: boolean;
@@ -24,16 +25,21 @@ interface LoginFormProps {
   onSwitchToRegister: () => void;
 }
 
+type RegisterErrors = Partial<Record<"email" | "password", string>>;
+
 const LoginForm = ({
   isOpen,
   onOpenChange,
   onSwitchToRegister,
 }: LoginFormProps) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [errors, setErrors] = useState<RegisterErrors>({});
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
+    // setLoading(true);
+
+    setErrors({});
 
     const form = new FormData(e.currentTarget);
 
@@ -42,34 +48,51 @@ const LoginForm = ({
       password: form.get("password"),
     };
 
-    const result = await signIn("credentials", {
-      email: userInfo.email,
-      password: userInfo.password,
-      redirect: false,
-    });
-
-    setLoading(false);
-
-    if (result?.ok) {
-      Swal.fire({
-        icon: "success",
-        title: "Logged In",
-        timer: 1000,
-        showConfirmButton: false,
+    const validatedData = loginSchema.safeParse(userInfo);
+    if (!validatedData.success) {
+      const fieldErrors = validatedData.error.flatten().fieldErrors;
+      setErrors({
+        email: fieldErrors.email?.[0],
+        password: fieldErrors.password?.[0],
       });
-      onOpenChange(false);
-    } else {
-      onOpenChange(false);
-      Swal.fire({
-        icon: "error",
-        title: "User Not Found",
-        text: "Email and Password didn't match.",
-        confirmButtonText: "Try Again",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          onOpenChange(true);
-        }
+      return;
+    }
+
+    const { email, password } = validatedData.data;
+    try {
+      setLoading(true);
+
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
       });
+
+      if (result?.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Logged In",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        onOpenChange(false);
+      } else {
+        onOpenChange(false);
+        Swal.fire({
+          icon: "error",
+          title: "User Not Found",
+          text: "Email and Password didn't match.",
+          confirmButtonText: "Try Again",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            onOpenChange(true);
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,8 +116,8 @@ const LoginForm = ({
                 Login to your account for get started.
               </DialogDescription>
             </DialogHeader>
-            <FieldGroup>
-              <Field>
+            <FieldGroup className="gap-4">
+              <Field className="gap-2">
                 <Label htmlFor="name-1">Email</Label>
                 <Input
                   className="h-5"
@@ -103,8 +126,13 @@ const LoginForm = ({
                   placeholder="example@email.com"
                   required
                 />
+                {errors.email && (
+                  <p id="email-error" className="text-sm text-red-500">
+                    {errors.email}
+                  </p>
+                )}
               </Field>
-              <Field>
+              <Field className="gap-2">
                 <Label htmlFor="username-1">Password</Label>
                 <Input
                   className="h-5 mb-2"
@@ -114,6 +142,11 @@ const LoginForm = ({
                   placeholder="Password"
                   required
                 />
+                {errors.password && (
+                  <p id="email-error" className="text-sm text-red-500">
+                    {errors.password}
+                  </p>
+                )}
               </Field>
             </FieldGroup>
 

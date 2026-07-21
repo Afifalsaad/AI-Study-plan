@@ -18,12 +18,15 @@ import { signIn, useSession } from "next-auth/react";
 import Swal from "sweetalert2";
 import { registerUser } from "@/actions/server/auth";
 import Image from "next/image";
+import { registerSchema } from "@/schema/registerSchema";
 
 interface RegisterFormProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onSwitchToLogin: () => void;
 }
+
+type RegisterErrors = Partial<Record<"name" | "email" | "password", string>>;
 
 const RegisterForm = ({
   isOpen,
@@ -32,25 +35,47 @@ const RegisterForm = ({
 }: RegisterFormProps) => {
   const session = useSession();
   const [loading, setLoading] = useState<boolean>(false);
+  const [errors, setErrors] = useState<RegisterErrors>({});
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    setErrors({});
+
     const form = new FormData(e.currentTarget);
+
+    const data = {
+      name: form.get("name")?.toString() ?? undefined,
+      email: form.get("email")?.toString() ?? undefined,
+      password: form.get("password")?.toString() ?? undefined,
+    };
+
+    const validatedData = registerSchema.safeParse(data);
+    if (!validatedData.success) {
+      const fieldErrors = validatedData.error.flatten().fieldErrors;
+      setErrors({
+        name: fieldErrors.name?.[0],
+        email: fieldErrors.email?.[0],
+        password: fieldErrors.password?.[0],
+      });
+      return;
+    }
+
+    const { name, email, password } = validatedData.data;
     try {
       setLoading(true);
 
       const result = await registerUser({
-        name: form.get("name")?.toString() ?? undefined,
-        email: form.get("email")?.toString() ?? undefined,
-        password: form.get("password")?.toString() ?? undefined,
+        name,
+        email,
+        password,
       });
 
       if (!result?.success) {
-        Swal.fire({
-          icon: "error",
-          title: "Already Registered. Please login.",
-          timer: 1000,
-          showConfirmButton: false,
+        setErrors({
+          email:
+            result?.message ??
+            "This email is already registered. Please log in.",
         });
         return;
       }
@@ -60,6 +85,7 @@ const RegisterForm = ({
         password: form.get("password")?.toString() ?? "",
         redirect: false,
       });
+      console.log("signIn result:", res);
       if (!res?.ok) {
         Swal.fire({
           icon: "error",
@@ -132,7 +158,7 @@ const RegisterForm = ({
                 Create a new account to get started.
               </DialogDescription>
             </DialogHeader>
-            <FieldGroup className="gap-5">
+            <FieldGroup className="gap-4">
               <Field>
                 <Label htmlFor="name-1">Name</Label>
                 <Input
@@ -143,6 +169,7 @@ const RegisterForm = ({
                   required
                 />
               </Field>
+
               <Field>
                 <Label htmlFor="email-1">Email</Label>
                 <Input
@@ -154,16 +181,26 @@ const RegisterForm = ({
                   required
                 />
               </Field>
+              {errors.email && (
+                <p id="email-error" className="text-sm text-red-500">
+                  {errors.email}
+                </p>
+              )}
               <Field>
                 <Label htmlFor="username-1">Password</Label>
                 <Input
-                  className="h-5 mb-2"
+                  className="h-5  mb-2"
                   id="username-1"
                   name="password"
                   type="password"
                   placeholder="Password"
                   required
                 />
+                {errors.password && (
+                  <p id="email-error" className=" mb-2 text-sm text-red-500">
+                    {errors.password}
+                  </p>
+                )}
               </Field>
             </FieldGroup>
             <DialogFooter>
@@ -185,7 +222,7 @@ const RegisterForm = ({
             </div>
           </form>
           <div className="text-gray-500">
-            <p className="text-center text-sm mb-3">Or, login with</p>
+            <p className="text-center text-sm mb-3">or, login with</p>
             <div className="flex justify-center gap-6">
               <Button
                 onClick={handleGoogleLogin}
