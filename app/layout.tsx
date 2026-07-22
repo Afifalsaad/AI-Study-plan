@@ -4,7 +4,8 @@ import { cn } from "@/lib/utils";
 import Navbar from "../components/Navbar";
 import { ThemeProvider } from "../components/ThemeProvider";
 import NextAuthProvider from "@/components/providers/NextAuthProviders";
-import { Plus_Jakarta_Sans, Playfair_Display, Inter } from "next/font/google";
+import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
+import toast, { Toaster } from "react-hot-toast";
 
 const inter = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -62,6 +63,43 @@ export default function RootLayout({
         </head>
         <body className="min-h-full flex flex-col">
           <ThemeProvider>
+            <Toaster
+              position="top-center"
+              reverseOrder={false}
+              gutter={8}
+              containerClassName=""
+              containerStyle={{}}
+              toasterId="default"
+              toastOptions={{
+                // Define default options
+                className: "",
+                duration: 5000,
+                removeDelay: 1000,
+                style: {
+                  background: "#363636",
+                  color: "#fff",
+                },
+
+                // Default options for specific types
+                success: {
+                  duration: 3000,
+                  iconTheme: {
+                    primary: "green",
+                    secondary: "black",
+                  },
+                },
+                error: {
+                  style: {
+                    background: "#f52b50",
+                  },
+                  duration: 3000,
+                  iconTheme: {
+                    primary: "red",
+                    secondary: "white",
+                  },
+                },
+              }}
+            />
             <Navbar></Navbar>
             {children}
           </ThemeProvider>

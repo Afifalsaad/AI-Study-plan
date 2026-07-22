@@ -85,7 +85,6 @@ const RegisterForm = ({
         password: form.get("password")?.toString() ?? "",
         redirect: false,
       });
-      console.log("signIn result:", res);
       if (!res?.ok) {
         Swal.fire({
           icon: "error",

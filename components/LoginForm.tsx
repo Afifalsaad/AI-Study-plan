@@ -18,6 +18,7 @@ import { signIn } from "next-auth/react";
 import Swal from "sweetalert2";
 import Image from "next/image";
 import { loginSchema } from "@/schema/loginSchema";
+import toast from "react-hot-toast";
 
 interface LoginFormProps {
   isOpen: boolean;
@@ -69,25 +70,27 @@ const LoginForm = ({
       });
 
       if (result?.ok) {
-        Swal.fire({
-          icon: "success",
-          title: "Logged In",
-          timer: 1000,
-          showConfirmButton: false,
-        });
+        toast.success("Logged In Successfully!");
+        // Swal.fire({
+        //   icon: "success",
+        //   title: "Logged In",
+        //   timer: 1000,
+        //   showConfirmButton: false,
+        // });
         onOpenChange(false);
       } else {
-        onOpenChange(false);
-        Swal.fire({
-          icon: "error",
-          title: "User Not Found",
-          text: "Email and Password didn't match.",
-          confirmButtonText: "Try Again",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            onOpenChange(true);
-          }
-        });
+        toast.error("Email and Password didn't match.");
+        onOpenChange(true);
+        // Swal.fire({
+        //   icon: "error",
+        //   title: "User Not Found",
+        //   text: "Email and Password didn't match.",
+        //   confirmButtonText: "Try Again",
+        // }).then((result) => {
+        //   if (result.isConfirmed) {
+        //     onOpenChange(true);
+        //   }
+        // });
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -143,7 +146,7 @@ const LoginForm = ({
                   required
                 />
                 {errors.password && (
-                  <p id="email-error" className="text-sm text-red-500">
+                  <p id="email-error" className="text-sm text-red-500 mb-2">
                     {errors.password}
                   </p>
                 )}
