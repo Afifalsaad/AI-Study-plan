@@ -92,13 +92,13 @@ const StudyInput = () => {
     try {
       setLoading(true);
       setOpen(false);
-      const res = await axios.post("api/study_plan", formData, {
+      await axios.post("api/study_plan", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(res?.data, res);
-      // router.push("/overview");
+      // console.log(res?.data, res);
+      router.push("/overview");
     } catch (error) {
       console.log(error);
     } finally {

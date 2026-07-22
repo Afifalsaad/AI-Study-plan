@@ -19,6 +19,7 @@ import Swal from "sweetalert2";
 import { registerUser } from "@/actions/server/auth";
 import Image from "next/image";
 import { registerSchema } from "@/schema/registerSchema";
+import toast from "react-hot-toast";
 
 interface RegisterFormProps {
   isOpen: boolean;
@@ -86,22 +87,9 @@ const RegisterForm = ({
         redirect: false,
       });
       if (!res?.ok) {
-        Swal.fire({
-          icon: "error",
-          title: "Login failed",
-          timer: 1000,
-          showConfirmButton: false,
-        });
+        toast.error("Login Failed");
         return;
       }
-
-      Swal.fire({
-        icon: "success",
-        title: "Account created & logged in.",
-        timer: 1000,
-        showConfirmButton: false,
-      });
-
       onOpenChange(false);
     } catch {
       Swal.fire({

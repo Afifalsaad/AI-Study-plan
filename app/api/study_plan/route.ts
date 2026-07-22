@@ -42,7 +42,7 @@ Student Information:
 
 Instructions:
 
-1. Calculate approximately how many days remain until the exam.
+1. Calculate how many days remain until the exam from created date.
 2. Analyze the student's level, available study time, weak areas, syllabus size, and goal.
 3. Create a realistic and achievable study plan from today until the exam date.
 4. Prioritize weak topics while ensuring full syllabus coverage.
@@ -132,10 +132,16 @@ Important:
       .trim();
 
     const studyPlan = JSON.parse(cleanedText);
-    // console.log("Study Plan:", studyPlan);
+
+    // Attach the actual exam date so the overview can compute exact days remaining
+    const examDateFromForm = formData.get("examDate") as string | null;
+    const studyPlanWithDate = {
+      ...studyPlan,
+      examDate: examDateFromForm || null,
+    };
 
     // Save generated data to DB
-    const studyPlanData = await prisma.studyPlan.upsert({
+    await prisma.studyPlan.upsert({
       where: {
         userId_examName: {
           userId: Number(session?.user?.id),
@@ -143,18 +149,17 @@ Important:
         },
       },
       update: {
-        data: studyPlan,
+        data: studyPlanWithDate,
       },
       create: {
         userId: Number(session?.user?.id),
         examName: studyPlan.summary?.examName || "Untitled Exam",
-        data: studyPlan,
+        data: studyPlanWithDate,
       },
     });
 
     return NextResponse.json({
       success: true,
-      // data: studyPlan,
     });
   } catch (error) {
     console.log(error);
@@ -178,7 +183,7 @@ export async function GET(req: NextRequest) {
         userId: Number(userId),
       },
     });
-    console.log('from get APi', res)
+    console.log("from get APi", res);
     return NextResponse.json({
       success: true,
       data: res,

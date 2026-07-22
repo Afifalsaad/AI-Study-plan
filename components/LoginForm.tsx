@@ -71,26 +71,10 @@ const LoginForm = ({
 
       if (result?.ok) {
         toast.success("Logged In Successfully!");
-        // Swal.fire({
-        //   icon: "success",
-        //   title: "Logged In",
-        //   timer: 1000,
-        //   showConfirmButton: false,
-        // });
         onOpenChange(false);
       } else {
         toast.error("Email and Password didn't match.");
         onOpenChange(true);
-        // Swal.fire({
-        //   icon: "error",
-        //   title: "User Not Found",
-        //   text: "Email and Password didn't match.",
-        //   confirmButtonText: "Try Again",
-        // }).then((result) => {
-        //   if (result.isConfirmed) {
-        //     onOpenChange(true);
-        //   }
-        // });
       }
     } catch (error) {
       console.error("Login error:", error);

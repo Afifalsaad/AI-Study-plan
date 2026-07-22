@@ -13,15 +13,12 @@ import {
   GraduationCap,
   AlertCircle,
   CheckCircle2,
-  Sparkles,
   CalendarDays,
   Layers,
   Trophy,
   Loader2,
-  FileText,
   Star,
   TrendingUp,
-  Shield,
 } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
@@ -32,6 +29,7 @@ type StudyPlanData = {
   createdAt: string;
   updatedAt: string;
   data: {
+    examDate?: string;
     summary?: {
       goal?: string;
       examName?: string;
@@ -162,8 +160,8 @@ const RenderValue = ({
 
 const LoadingView = () => {
   return (
-    <div className="flex min-h-[70vh] items-center justify-center bg-[#f8fafc] dark:bg-gray-950">
-      <div className="flex flex-col items-center gap-5 rounded-3xl border border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl p-10 shadow-2xl shadow-indigo-500/10">
+    <div className="flex min-h-screen items-center justify-center dark:bg-gray-950">
+      <div className="flex flex-col items-center gap-5 rounded-3xl dark:bg-gray-900/80 backdrop-blur-xl p-10 shadow-2xl shadow-indigo-500/10">
         <div className="relative">
           <div className="absolute inset-0 rounded-full bg-indigo-400/20 animate-ping" />
           <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-500/20">
@@ -261,7 +259,7 @@ const StatCard = ({
       <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
         {label}
       </p>
-      <div className="mt-1.5 text-2xl font-bold text-gray-900 dark:text-white">
+      <div className="mt-1.5 text-sm font-semibold dark:text-white">
         {isEmpty(value) ? (
           <span className="text-sm font-normal text-gray-400">N/A</span>
         ) : (
@@ -287,7 +285,6 @@ export default function PlanOverview() {
           ? planArray[0]
           : planArray;
         console.log(res?.data);
-
         setPlan(responsePlan);
       } catch (error) {
         console.log("Study plan loading error:", error);
@@ -317,6 +314,22 @@ export default function PlanOverview() {
     );
   }
 
+  const calculateDaysRemaining = (examDate?: string | null) => {
+    if (!examDate) return null;
+    const today = new Date();
+    const todayUTC = Date.UTC(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+    const [year, month, day] = examDate.split("-").map(Number);
+    const examUTC = Date.UTC(year, month - 1, day);
+    const difference = examUTC - todayUTC;
+    return Math.max(0, Math.ceil(difference / (1000 * 60 * 60 * 24)));
+  };
+
+  const exactDaysRemaining = calculateDaysRemaining(plan?.data?.examDate as string | undefined);
+
   const summary = plan?.data?.summary;
   const strategy = plan?.data?.strategy;
 
@@ -342,7 +355,7 @@ export default function PlanOverview() {
     <div className="min-h-screen bg-[#f8fafc] dark:bg-gray-950 transition-colors duration-700">
       <div className="mx-auto max-w-7xl space-y-6 p-4 md:p-6 lg:p-8">
         {/* ─── Hero Header ─────────────────────────────────────────── */}
-        <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-indigo-500  to-purple-300 dark:from-indigo-800 dark:via-indigo-900 dark:to-purple-900 text-white shadow-2xl shadow-indigo-500/30">
+        <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-indigo-800 via-indigo-600 to-violet-700 text-white shadow-2xl shadow-indigo-500/30 dark:from-indigo-900 dark:via-indigo-950 dark:to-violet-950">
           {/* Decorative blobs */}
           <div className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-purple-400/20 blur-3xl" />
           <div className="absolute -bottom-16 -left-16 h-64 w-64 rounded-full bg-indigo-300/20 blur-3xl" />
@@ -352,7 +365,7 @@ export default function PlanOverview() {
               {/* Left */}
               <div>
                 <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-sm font-medium backdrop-blur-sm border border-white/20">
-                  <Sparkles className="h-4 w-4 text-yellow-300" />
+                  {/* <Sparkles className="h-4 w-4 text-yellow-300" /> */}
                   Personalized AI Study Roadmap
                 </div>
 
@@ -366,10 +379,6 @@ export default function PlanOverview() {
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 border border-white/20 px-4 py-1.5 text-xs font-semibold backdrop-blur-sm">
-                    <Shield className="h-3.5 w-3.5" />
-                    ID: {plan?.id?.slice(0, 12) || "N/A"}...
-                  </span>
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 border border-white/20 px-4 py-1.5 text-xs font-semibold backdrop-blur-sm">
                     <GraduationCap className="h-3.5 w-3.5" />
                     {plan?.examName || "N/A"}
@@ -432,7 +441,7 @@ export default function PlanOverview() {
         </div>
 
         {/* ─── Quick Stats ─────────────────────────────────────────── */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard
             label="Goal"
             value={summary?.goal}
@@ -443,7 +452,13 @@ export default function PlanOverview() {
           />
           <StatCard
             label="Days Remaining"
-            value={summary?.daysRemaining}
+            value={
+              exactDaysRemaining !== null
+                ? `${exactDaysRemaining} days`
+                : summary?.daysRemaining !== undefined
+                ? `${summary.daysRemaining} days`
+                : null
+            }
             icon={
               <Clock className="h-5 w-5 text-purple-600 dark:text-purple-400" />
             }
@@ -468,31 +483,6 @@ export default function PlanOverview() {
             gradient="from-emerald-50 to-white dark:from-emerald-500/10 dark:to-gray-900"
           />
         </div>
-
-        {/* ─── Summary ─────────────────────────────────────────────── */}
-        <SectionCard
-          title="Summary"
-          description="Overall exam preparation summary at a glance."
-          icon={<FileText className="h-5 w-5" />}>
-          {summary ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {Object.entries(summary).map(([key, value]) => (
-                <div
-                  key={key}
-                  className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/60 p-4 transition-all duration-300 hover:border-indigo-200 dark:hover:border-indigo-800">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-indigo-500 dark:text-indigo-400">
-                    {formatLabel(key)}
-                  </p>
-                  <div className="mt-2 font-semibold text-gray-900 dark:text-white">
-                    <RenderValue value={value} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <EmptyState description="Summary information is not available." />
-          )}
-        </SectionCard>
 
         {/* ─── Strategy ────────────────────────────────────────────── */}
         <SectionCard

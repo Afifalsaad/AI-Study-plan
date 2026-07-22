@@ -65,14 +65,14 @@ const Navbar = () => {
             Summary
           </Link>
           <Link
+            href="/overview"
+            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+            Overview
+          </Link>
+          <Link
             href="#how-it-works"
             className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
             How it works
-          </Link>
-          <Link
-            href="#pricing"
-            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-            Pricing
           </Link>
         </div>
 

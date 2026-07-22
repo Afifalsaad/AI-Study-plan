@@ -72,7 +72,7 @@ export default function RootLayout({
               toasterId="default"
               toastOptions={{
                 // Define default options
-                className: "",
+                className: "text-sm font-medium",
                 duration: 5000,
                 removeDelay: 1000,
                 style: {
@@ -82,10 +82,13 @@ export default function RootLayout({
 
                 // Default options for specific types
                 success: {
+                  style: {
+                    background: "#8A8AFF",
+                  },
                   duration: 3000,
                   iconTheme: {
-                    primary: "green",
-                    secondary: "black",
+                    primary: "#2E2EFF",
+                    secondary: "white",
                   },
                 },
                 error: {

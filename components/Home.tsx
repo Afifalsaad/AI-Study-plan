@@ -18,15 +18,70 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import Pdf from "./Pdf";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
+import axios from "axios";
 
 export default function Home() {
   const uploadZoneRef = useRef<HTMLDivElement>(null);
+  const [planItems, setPlanItems] = useState<string[]>([]);
+  const [planLoaded, setPlanLoaded] = useState(false);
+
+  useEffect(() => {
+    const fetchPlan = async () => {
+      try {
+        const res = await axios.get("/api/study_plan");
+        const planArray = res?.data?.data;
+        const latestPlan = Array.isArray(planArray) ? planArray[0] : planArray;
+
+        if (latestPlan?.data) {
+          const data = latestPlan.data;
+
+          // Try studyPlan phases first (up to 4 items)
+          if (Array.isArray(data.studyPlan) && data.studyPlan.length > 0) {
+            const items = data.studyPlan
+              .slice(0, 4)
+              .map(
+                (p: {
+                  phase?: string;
+                  duration?: string;
+                  description?: string;
+                }) =>
+                  [p.phase, p.duration].filter(Boolean).join(" — ") ||
+                  p.description ||
+                  "Study Phase"
+              );
+            setPlanItems(items);
+          }
+          // Fallback: first week of weeklySchedule tasks
+          else if (
+            Array.isArray(data.weeklySchedule) &&
+            data.weeklySchedule.length > 0
+          ) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const firstWeek = data.weeklySchedule[0] as any;
+            const tasks = Array.isArray(firstWeek?.tasks)
+              ? firstWeek.tasks
+                  .slice(0, 4)
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  .map((t: any) => t.title || t.description || "Task")
+              : [];
+            setPlanItems(tasks);
+          }
+        }
+      } catch {
+        // silent — fallback empty state is handled in render
+      } finally {
+        setPlanLoaded(true);
+      }
+    };
+    fetchPlan();
+  }, []);
 
   const scrollToUploadZone = () => {
     uploadZoneRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
   const features = [
     {
       title: "AI Study Planner",
@@ -60,12 +115,6 @@ export default function Home() {
       gradient:
         "from-orange-500/10 to-orange-100 dark:from-orange-500/20 dark:to-orange-950/40",
     },
-  ];
-
-  const planItems = [
-    "Physics Chapter 03 - 45 min",
-    "Math Practice Set - 30 min",
-    "Chemistry Flashcards - 20 min",
   ];
 
   return (
@@ -153,26 +202,51 @@ export default function Home() {
                 </CardHeader>
 
                 <CardContent className="space-y-4">
-                  {planItems.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm font-semibold">
-                          {index + 1}
-                        </div>
-                        <span className="text-gray-700 dark:text-gray-300 font-medium">
-                          {item}
-                        </span>
-                      </div>
-                      <Clock className="w-5 h-5 text-gray-400" />
+                  {!planLoaded ? (
+                    // Loading skeleton
+                    <div className="space-y-3">
+                      {[1, 2, 3].map((i) => (
+                        <div
+                          key={i}
+                          className="h-14 rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse"
+                        />
+                      ))}
                     </div>
-                  ))}
+                  ) : planItems.length > 0 ? (
+                    planItems.map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm font-semibold">
+                            {index + 1}
+                          </div>
+                          <span className="text-gray-700 dark:text-gray-300 font-medium">
+                            {item}
+                          </span>
+                        </div>
+                        <Clock className="w-5 h-5 text-gray-400" />
+                      </div>
+                    ))
+                  ) : (
+                    // Fallback — no plan created yet
+                    <div className="flex flex-col items-center justify-center py-8 text-center gap-3">
+                      <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-500/15 flex items-center justify-center">
+                        <BrainCircuit className="w-6 h-6 text-indigo-500" />
+                      </div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        No study plan yet.
+                      </p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">
+                        Create a plan to see your AI tasks here.
+                      </p>
+                    </div>
+                  )}
 
                   <div className="grid grid-cols-3 gap-3 pt-3">
                     <div className="rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 p-4 text-center">
                       <h3 className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
-                        3
+                        {planItems.length || "—"}
                       </h3>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
                         Tasks
@@ -243,7 +317,7 @@ export default function Home() {
 
       {/* Footer CTA */}
       <section className="container mx-auto px-4 pb-20">
-        <div className="rounded-3xl bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-800 dark:to-purple-900 py-14 px-6 text-center text-white shadow-2xl shadow-indigo-500/20">
+        <div className="rounded-3xl bg-linear-to-r from-indigo-600 to-purple-600 dark:from-indigo-800 dark:to-purple-900 py-14 px-6 text-center text-white shadow-2xl shadow-indigo-500/20">
           <BookOpen className="w-12 h-12 mx-auto mb-5 text-white/90" />
 
           <h2 className="text-3xl md:text-4xl font-bold mb-5">
