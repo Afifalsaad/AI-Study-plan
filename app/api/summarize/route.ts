@@ -37,15 +37,21 @@ export async function POST(req: NextRequest) {
 
     // Generate content using Gemini 2.0 Flash
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash",
       contents: [
         {
-          inlineData: {
-            data: base64Data,
-            mimeType: "application/pdf",
-          },
+          parts: [
+            {
+              inlineData: {
+                data: base64Data,
+                mimeType: "application/pdf",
+              },
+            },
+            {
+              text: prompt,
+            },
+          ],
         },
-        prompt,
       ],
     });
 
