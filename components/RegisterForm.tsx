@@ -101,8 +101,7 @@ const RegisterForm = ({
         toast.error("Login Failed");
         return;
       }
-      router.replace(callbackUrl);
-      router.refresh();
+      window.location.assign(callbackUrl);
       onOpenChange(false);
     } catch {
       toast.error("Something went wrong");

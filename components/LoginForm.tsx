@@ -80,8 +80,7 @@ const LoginForm = ({
       if (result?.ok) {
         toast.success("Logged In Successfully!");
         onOpenChange(false);
-        router.replace(callbackUrl);
-        router.refresh();
+        window.location.assign(callbackUrl);
       } else {
         toast.error("Email and Password didn't match.");
         onOpenChange(true);
