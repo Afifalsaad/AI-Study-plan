@@ -121,7 +121,7 @@ Important:
 
     // Generate the study plan using the AI model
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3.6-flash",
       contents,
     });
 
