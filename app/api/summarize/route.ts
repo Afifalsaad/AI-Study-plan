@@ -12,6 +12,40 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 // Maximum file size: 20MB (Gemini File API supports up to 2GB, but we keep it reasonable)
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
+// Retry configuration for transient network errors
+const MAX_UPLOAD_RETRIES = 3;
+const RETRY_DELAY_MS = 2000;
+
+/**
+ * Retries a function with exponential backoff for network errors
+ */
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  retries = MAX_UPLOAD_RETRIES,
+  delay = RETRY_DELAY_MS
+): Promise<T> {
+  try {
+    return await fn();
+  } catch (error: unknown) {
+    const isNetworkError =
+      error instanceof Error &&
+      (error.message.includes("ECONNRESET") ||
+        error.message.includes("ETIMEDOUT") ||
+        error.message.includes("ENOTFOUND") ||
+        error.message.includes("fetch failed") ||
+        error.message.includes("network"));
+
+    if (isNetworkError && retries > 0) {
+      console.log(
+        `[PDF Upload] Network error, retrying... (${retries} retries left)`
+      );
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return retryWithBackoff(fn, retries - 1, delay * 2);
+    }
+    throw error;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -64,15 +98,22 @@ export async function POST(req: NextRequest) {
       file.size
     );
 
-    // Upload file to Gemini File API
-    // Convert Buffer to Blob for the SDK
-    const blob = new Blob([buffer], { type: "application/pdf" });
-    const uploadedFile = await ai.files.upload({
-      file: blob,
-      config: {
-        mimeType: "application/pdf",
-        displayName: file.name,
-      },
+    // Upload file to Gemini File API with retry logic
+    // Use File object instead of Blob for better Node.js compatibility
+    const uploadedFile = await retryWithBackoff(async () => {
+      // Create a File-like object for the SDK
+      // In Node.js, we need to ensure the file data is properly formatted
+      const fileForUpload = new File([buffer], file.name, {
+        type: "application/pdf",
+      });
+
+      return await ai.files.upload({
+        file: fileForUpload,
+        config: {
+          mimeType: "application/pdf",
+          displayName: file.name,
+        },
+      });
     });
 
     if (!uploadedFile.name) {
@@ -89,7 +130,7 @@ export async function POST(req: NextRequest) {
       "Waiting for processing..."
     );
 
-    // Wait for file to be processed (polling)
+    // Wait for file to be processed (polling) with retry
     let fileState = uploadedFile.state;
     let retries = 0;
     const maxRetries = 30; // 30 retries * 2s = 60s max wait
