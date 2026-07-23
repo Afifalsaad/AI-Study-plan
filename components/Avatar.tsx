@@ -44,7 +44,7 @@ export function AvatarDropdown() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mr-2 dark:bg-[#141135]">
         <DropdownMenuGroup>
-          <Link href="/Summary">
+          <Link href="/summary">
             <DropdownMenuItem className="capitalize font-semibold block lg:hidden hover:cursor-pointer dark:hover:bg-[#7c86ff]">
               Summary
             </DropdownMenuItem>

@@ -303,7 +303,7 @@ export default function PlanOverview() {
 
   if (!plan) {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center bg-[#f8fafc] dark:bg-gray-950 p-4">
+      <div className="flex min-h-screen items-center justify-center bg-[#f8fafc] dark:bg-gray-950 p-4">
         <div className="w-full max-w-2xl">
           <EmptyState
             title="No study plan found"

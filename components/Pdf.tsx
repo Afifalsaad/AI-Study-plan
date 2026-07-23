@@ -70,7 +70,7 @@ const Pdf = () => {
         // console.log("From DB & PDF:", summary, conversationId);
         localStorage.setItem("active_conv_id", conversationId.toString());
         setLoading(false);
-        router.push("/Summary");
+        router.push("/summary");
       } catch (error: unknown) {
         console.error("Error uploading PDF:", error);
         setLoading(false);

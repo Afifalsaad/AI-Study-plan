@@ -64,7 +64,7 @@ const Navbar = () => {
           </div>
         </Link>
 
-        {/* Navigation Links */}
+        {/* Navigation Links (Desktop) */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
@@ -114,6 +114,7 @@ const Navbar = () => {
           )}
         </div>
       </div>
+
       {!isAuthenticated && (
         <>
           <LoginForm

@@ -10,7 +10,7 @@ export async function proxy(req: NextRequest) {
 
   const pathname = req.nextUrl.pathname;
 
-  const protectedRoutes = ["/Summary", "/profile", "/overview"];
+  const protectedRoutes = ["/summary", "/profile", "/overview"];
 
   const isProtected = protectedRoutes.some((route) =>
     pathname.startsWith(route)
@@ -28,6 +28,6 @@ export const config = {
     "/dashboard/:path*",
     "/overview/:path*",
     "/settings/:path*",
-    "/Summary/:path*",
+    "/summary/:path*",
   ],
 };
