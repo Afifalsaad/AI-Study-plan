@@ -3,7 +3,7 @@ import Navbar from "./Navbar";
 
 export default function NavbarWrapper() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback="">
       <Navbar />
     </Suspense>
   );

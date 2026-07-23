@@ -133,7 +133,12 @@ const RegisterForm = ({
 
   const handleGithubLogin = async () => {
     setLoading(true);
-    await signIn("github");
+    const requestedUrl = searchParams.get("callbackUrl") || "/";
+    const callbackUrl =
+      requestedUrl.startsWith("/") && !requestedUrl.startsWith("//")
+        ? requestedUrl
+        : "/";
+    await signIn("github", { callbackUrl });
     const user = session?.data?.user;
     if (!user) return;
     try {
