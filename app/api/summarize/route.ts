@@ -25,6 +25,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
+    if (!process.env.GEMINI_API_KEY) {
+      console.error("[PDF Upload] GEMINI_API_KEY is not set");
+      return NextResponse.json(
+        { error: "GEMINI_API_KEY is not configured on the server" },
+        { status: 500 }
+      );
+    }
+
     // Convert file to array buffer, then to Buffer and base64 string
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -33,7 +41,7 @@ export async function POST(req: NextRequest) {
     const prompt =
       "You are an expert study assistant. Below is the uploaded PDF document. Generate a structured summary including Overview, Key Takeaways, Core Concepts, and Recommended Next Steps in Markdown format. Keep the headings clear and use markdown lists for takeaways and concepts.";
 
-    console.log("[PDF Upload] Calling Gemini API with model: gemini-2.5-flash, base64 length:", base64Data.length);
+    console.log("[PDF Upload] Calling Gemini API with model: gemini-2.0-flash, base64 length:", base64Data.length);
 
     // Generate content using Gemini 2.0 Flash
     const response = await ai.models.generateContent({
@@ -88,10 +96,37 @@ export async function POST(req: NextRequest) {
     console.error("[PDF Upload] Error summarizing PDF:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Failed to summarize PDF";
+
+    // Check if it's a quota/rate-limit error from Gemini
+    const isQuotaError =
+      error instanceof Error &&
+      (error.message.includes("429") ||
+        error.message.includes("RESOURCE_EXHAUSTED") ||
+        error.message.includes("quota") ||
+        error.message.includes("rate limit"));
+
+    if (isQuotaError) {
+      console.error("[PDF Upload] Gemini API quota exceeded");
+      return NextResponse.json(
+        {
+          error: "Gemini API quota exceeded. Please try again later or upgrade your plan.",
+          quotaExceeded: true,
+        },
+        { status: 429 }
+      );
+    }
+
     if (error instanceof Error && error.stack) {
       console.error("[PDF Upload] Error stack:", error.stack);
     }
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: errorMessage,
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : undefined,
+      },
+      { status: 500 }
+    );
   }
 }
 

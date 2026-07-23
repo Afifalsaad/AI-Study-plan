@@ -76,7 +76,25 @@ const Pdf = () => {
         setLoading(false);
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error occurred";
-        toast.error("Failed to summarize PDF: " + errorMessage);
+
+        // Check if it's a quota error from the API
+        if (
+          typeof error === "object" &&
+          error !== null &&
+          "response" in error &&
+          typeof error.response === "object" &&
+          error.response !== null &&
+          "data" in error.response &&
+          typeof error.response.data === "object" &&
+          error.response.data !== null &&
+          "quotaExceeded" in error.response.data
+        ) {
+          toast.error(
+            "Gemini API quota exceeded. Please try again later or upgrade your plan."
+          );
+        } else {
+          toast.error("Failed to summarize PDF: " + errorMessage);
+        }
       }
     } else {
       toast.error("Please upload one PDF file");
