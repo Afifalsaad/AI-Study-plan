@@ -1,10 +1,11 @@
-"use server";
-
 import authOptions from "@/lib/authOptions";
 import { prisma } from "@/lib/prisma";
 import { GoogleGenAI } from "@google/genai";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+
+// Allow up to 60 seconds for Gemini API calls
+export const maxDuration = 60;
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 

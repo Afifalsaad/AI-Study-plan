@@ -6,6 +6,8 @@ export async function proxy(req: NextRequest) {
   const token = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
+    // Explicitly handle both dev (http) and production (https) cookies
+    secureCookie: process.env.NODE_ENV === "production",
   });
 
   const pathname = req.nextUrl.pathname;

@@ -4,14 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import authOptions from "@/lib/authOptions";
 
-// Required for file uploads on Vercel — disables the default body size limit
-export const config = {
-  api: {
-    bodyParser: false,
-    responseLimit: "20mb",
-  },
-};
-
 // Allow up to 60 seconds for Gemini API calls (PDF processing can be slow)
 export const maxDuration = 60;
 
