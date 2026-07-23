@@ -205,10 +205,10 @@ export default function Home() {
                   {!planLoaded ? (
                     // Loading skeleton
                     <div className="space-y-3">
-                      {[1, 2, 3].map((i) => (
+                      {[1, 2, 3, 4].map((i) => (
                         <div
                           key={i}
-                          className="h-14 rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse"
+                          className="h-19 rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse"
                         />
                       ))}
                     </div>

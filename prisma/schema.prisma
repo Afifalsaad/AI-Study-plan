@@ -33,7 +33,7 @@ model Summary {
 model StudyPlan {
   id        String   @id @default(cuid())
   userId    Int
-  examName  String
+  examName  String @db.Citext
   data      Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

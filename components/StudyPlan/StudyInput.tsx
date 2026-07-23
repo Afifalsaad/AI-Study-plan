@@ -64,7 +64,7 @@ const StudyInput = () => {
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
-    examName: "",
+    examName: "".toLowerCase(),
     examDate: "",
     dailyTime: "",
     level: "",
@@ -86,6 +86,7 @@ const StudyInput = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     setOpen(true);
+    console.log(formData);
   };
 
   const handleGenerate = async () => {
@@ -411,13 +412,13 @@ const StudyInput = () => {
 
       {/* Preview Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl sm:max-w-2xl">
+        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl sm:max-w-2xl bg-accent">
           <DialogHeader>
             <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 dark:bg-indigo-500/20">
               <CheckCircle2 className="h-7 w-7 text-indigo-600 dark:text-indigo-400" />
             </div>
 
-            <DialogTitle className="text-2xl">
+            <DialogTitle className="text-2xl capitalize">
               Your Study Plan Input Preview
             </DialogTitle>
 

@@ -93,7 +93,7 @@ export default function RootLayout({
                 },
                 error: {
                   style: {
-                    background: "#f52b50",
+                    background: "#FF5C5C",
                   },
                   duration: 3000,
                   iconTheme: {

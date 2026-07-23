@@ -8,6 +8,7 @@ import { Field, FieldLabel } from "./ui/field";
 import { useSession } from "next-auth/react";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
+import toast from "react-hot-toast";
 
 const Pdf = () => {
   const [fileName, setFileName] = useState<string | null>(null);
@@ -75,10 +76,10 @@ const Pdf = () => {
         setLoading(false);
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error occurred";
-        alert("Failed to summarize PDF: " + errorMessage);
+        toast.error("Failed to summarize PDF: " + errorMessage);
       }
     } else {
-      alert("Please upload one PDF file");
+      toast.error("Please upload one PDF file");
     }
   };
 

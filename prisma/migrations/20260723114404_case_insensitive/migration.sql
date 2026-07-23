@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "StudyPlan" ALTER COLUMN "examName" SET DATA TYPE CITEXT;

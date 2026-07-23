@@ -139,13 +139,13 @@ Important:
       ...studyPlan,
       examDate: examDateFromForm || null,
     };
-
     // Save generated data to DB
     await prisma.studyPlan.upsert({
       where: {
         userId_examName: {
           userId: Number(session?.user?.id),
-          examName: studyPlan.summary?.examName || "Untitled Exam",
+          examName:
+            studyPlan.summary?.examName || "Untitled Exam".toLowerCase(),
         },
       },
       update: {
@@ -182,8 +182,10 @@ export async function GET(req: NextRequest) {
       where: {
         userId: Number(userId),
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
-    console.log("from get APi", res);
     return NextResponse.json({
       success: true,
       data: res,
