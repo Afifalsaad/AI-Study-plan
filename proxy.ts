@@ -6,30 +6,26 @@ export async function proxy(req: NextRequest) {
   const token = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
-    // Explicitly handle both dev (http) and production (https) cookies
-    secureCookie: process.env.NODE_ENV === "production",
   });
 
-  const pathname = req.nextUrl.pathname;
+  console.log({
+    path: req.nextUrl.pathname,
+    hasToken: Boolean(token),
+  });
 
-  const protectedRoutes = ["/summary", "/profile", "/overview"];
+  if (!token) {
+    const callbackUrl = req.nextUrl.pathname + req.nextUrl.search;
+    const loginUrl = new URL("/", req.url);
+    loginUrl.searchParams.set("login", "true");
 
-  const isProtected = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
+    loginUrl.searchParams.set("callbackUrl", callbackUrl);
 
-  if (isProtected && !token) {
-    return NextResponse.redirect(new URL("/?login=true", req.url));
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    "/dashboard/:path*",
-    "/overview/:path*",
-    "/settings/:path*",
-    "/summary/:path*",
-  ],
+  matcher: ["/overview/:path*", "/summary/:path*", "/profile/:path*"],
 };

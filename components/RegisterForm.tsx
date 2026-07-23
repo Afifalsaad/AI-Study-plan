@@ -20,6 +20,7 @@ import { registerUser } from "@/actions/server/auth";
 import Image from "next/image";
 import { registerSchema } from "@/schema/registerSchema";
 import toast from "react-hot-toast";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface RegisterFormProps {
   isOpen: boolean;
@@ -37,9 +38,17 @@ const RegisterForm = ({
   const session = useSession();
   const [loading, setLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<RegisterErrors>({});
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const requestedUrl = searchParams.get("callbackUrl") || "/";
+    const callbackUrl =
+      requestedUrl.startsWith("/") && !requestedUrl.startsWith("//")
+        ? requestedUrl
+        : "/";
 
     setErrors({});
 
@@ -78,6 +87,8 @@ const RegisterForm = ({
             result?.message ??
             "This email is already registered. Please log in.",
         });
+        router.replace(callbackUrl);
+        router.refresh();
         return;
       }
 
@@ -90,19 +101,23 @@ const RegisterForm = ({
         toast.error("Login Failed");
         return;
       }
+      router.replace(callbackUrl);
+      router.refresh();
       onOpenChange(false);
     } catch {
-      Swal.fire({
-        icon: "error",
-        title: "Something went wrong",
-      });
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
-    await signIn("google");
+    const requestedUrl = searchParams.get("callbackUrl") || "/";
+    const callbackUrl =
+      requestedUrl.startsWith("/") && !requestedUrl.startsWith("//")
+        ? requestedUrl
+        : "/";
+    await signIn("google", { callbackUrl });
     const user = session?.data?.user;
     if (!user) return;
     try {
@@ -111,8 +126,8 @@ const RegisterForm = ({
         email: user.email ?? undefined,
         image: user.image ?? undefined,
       });
-    } catch (error) {
-      console.log(error);
+    } catch {
+      toast.error("Something went wrong");
     }
   };
 

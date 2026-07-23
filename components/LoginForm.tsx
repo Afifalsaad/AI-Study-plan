@@ -15,10 +15,10 @@ import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn } from "next-auth/react";
-import Swal from "sweetalert2";
 import Image from "next/image";
 import { loginSchema } from "@/schema/loginSchema";
 import toast from "react-hot-toast";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface LoginFormProps {
   isOpen: boolean;
@@ -35,10 +35,18 @@ const LoginForm = ({
 }: LoginFormProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<RegisterErrors>({});
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // setLoading(true);
+
+    const requestedUrl = searchParams.get("callbackUrl") || "/";
+    const callbackUrl =
+      requestedUrl.startsWith("/") && !requestedUrl.startsWith("//")
+        ? requestedUrl
+        : "/";
 
     setErrors({});
 
@@ -71,8 +79,9 @@ const LoginForm = ({
 
       if (result?.ok) {
         toast.success("Logged In Successfully!");
-  
         onOpenChange(false);
+        router.replace(callbackUrl);
+        router.refresh();
       } else {
         toast.error("Email and Password didn't match.");
         onOpenChange(true);
@@ -85,7 +94,12 @@ const LoginForm = ({
   };
 
   const handleGoogleLogin = async () => {
-    await signIn("google");
+    const requestedUrl = searchParams.get("callbackUrl") || "/";
+    const callbackUrl =
+      requestedUrl.startsWith("/") && !requestedUrl.startsWith("//")
+        ? requestedUrl
+        : "/";
+    await signIn("google", { callbackUrl });
   };
 
   const handleGithubLogin = async () => {
