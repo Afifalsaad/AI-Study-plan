@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 
 export function AvatarDropdown() {
   const { data: session, status } = useSession();
@@ -36,23 +37,32 @@ export function AvatarDropdown() {
           size="icon"
           className="rounded-full hover:cursor-pointer">
           <Avatar>
-            <AvatarImage
-              src={image || "/user.png"}
-              alt="User avatar"
-            />
+            <AvatarImage src={image || "/user.png"} alt="User avatar" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mr-2 dark:bg-[#141135]">
         <DropdownMenuGroup>
-          <DropdownMenuItem className="hover:cursor-pointer dark:hover:bg-[#7c86ff]">
-            Profile
-          </DropdownMenuItem>
-          <DropdownMenuItem className="hover:cursor-pointer dark:hover:bg-[#7c86ff]">
-            Billing
-          </DropdownMenuItem>
-          <DropdownMenuItem className="hover:cursor-pointer dark:hover:bg-[#7c86ff]">
+          <Link href="/Summary">
+            <DropdownMenuItem className="capitalize font-semibold block lg:hidden hover:cursor-pointer dark:hover:bg-[#7c86ff]">
+              Summary
+            </DropdownMenuItem>
+          </Link>
+
+          <Link href="/overview">
+            <DropdownMenuItem className="capitalize font-semibold block sm:hidden hover:cursor-pointer dark:hover:bg-[#7c86ff]">
+              Overview
+            </DropdownMenuItem>
+          </Link>
+
+          <Link href="/">
+            <DropdownMenuItem className="capitalize font-semibold hover:cursor-pointer dark:hover:bg-[#7c86ff]">
+              Profile
+            </DropdownMenuItem>
+          </Link>
+
+          <DropdownMenuItem className="capitalize font-semibold hover:cursor-pointer dark:hover:bg-[#7c86ff]">
             Settings
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -61,7 +71,7 @@ export function AvatarDropdown() {
           <DropdownMenuItem
             variant="destructive"
             onClick={() => signOut()}
-            className="hover:cursor-pointer">
+            className="capitalize font-semibold hover:cursor-pointer">
             Log out
           </DropdownMenuItem>
         </DropdownMenuGroup>

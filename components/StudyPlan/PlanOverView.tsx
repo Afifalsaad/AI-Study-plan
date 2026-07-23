@@ -328,7 +328,9 @@ export default function PlanOverview() {
     return Math.max(0, Math.ceil(difference / (1000 * 60 * 60 * 24)));
   };
 
-  const exactDaysRemaining = calculateDaysRemaining(plan?.data?.examDate as string | undefined);
+  const exactDaysRemaining = calculateDaysRemaining(
+    plan?.data?.examDate as string | undefined
+  );
 
   const summary = plan?.data?.summary;
   const strategy = plan?.data?.strategy;
@@ -502,7 +504,7 @@ export default function PlanOverview() {
                     {strategy.focusAreas.map((item, index) => (
                       <span
                         key={index}
-                        className="rounded-full bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-200 dark:border-indigo-500/30 px-3.5 py-1.5 text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                        className="rounded-none lg:rounded-full bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-200 dark:border-indigo-500/30 px-3.5 py-1.5 text-sm font-medium text-indigo-700 dark:text-indigo-300">
                         {item}
                       </span>
                     ))}
@@ -560,7 +562,7 @@ export default function PlanOverview() {
                     {strategy.weakTopicsPriority.map((item, index) => (
                       <span
                         key={index}
-                        className="rounded-full bg-rose-50 dark:bg-rose-500/15 border border-rose-200 dark:border-rose-500/30 px-3.5 py-1.5 text-sm font-medium text-rose-700 dark:text-rose-300">
+                        className="rounded-none lg:rounded-full bg-rose-50 dark:bg-rose-500/15 border border-rose-200 dark:border-rose-500/30 px-3.5 py-1.5 text-sm font-medium text-rose-700 dark:text-rose-300">
                         {item}
                       </span>
                     ))}

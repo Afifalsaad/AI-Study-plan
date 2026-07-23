@@ -120,11 +120,12 @@ const Sidebar = ({
 
         {/* Conversation List */}
         {loading ? (
-          <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-50 dark:bg-gray-900">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
-            <p className="mt-4 text-sm font-medium text-gray-500 dark:text-gray-400 animate-pulse">
-              Conversations loading...
-            </p>
+          <div className="flex-1 flex flex-col items-center justify-center p-4">
+            {sidebarOpen && (
+              <p className="mt-3 text-xs font-medium text-slate-500 dark:text-slate-400 animate-pulse">
+                Conversations loading...
+              </p>
+            )}
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto space-y-2 p-2 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">

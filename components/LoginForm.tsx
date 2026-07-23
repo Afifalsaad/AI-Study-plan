@@ -71,6 +71,7 @@ const LoginForm = ({
 
       if (result?.ok) {
         toast.success("Logged In Successfully!");
+  
         onOpenChange(false);
       } else {
         toast.error("Email and Password didn't match.");

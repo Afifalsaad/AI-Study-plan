@@ -7,7 +7,7 @@ import ChatInbox from "@/components/Summary/ChatInbox";
 import axios from "axios";
 
 const SummaryWrapper = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConv, setActiveConv] = useState<Conversation | null>(null);
@@ -112,13 +112,8 @@ const SummaryWrapper = () => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
         setSidebarOpen(false);
-      } else {
-        setSidebarOpen(true);
       }
     };
-
-    // Set initial value on client mount
-    handleResize();
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);

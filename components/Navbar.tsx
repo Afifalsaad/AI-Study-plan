@@ -34,8 +34,8 @@ function AuthRedirectHandler({
 }
 
 const Navbar = () => {
-  const session = useSession();
-  const isAuthenticated = session.status === "authenticated";
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
 
   const [authMode, setAuthMode] = useState<"login" | "register" | null>(null);
 
@@ -44,14 +44,14 @@ const Navbar = () => {
       <Suspense fallback={null}>
         <AuthRedirectHandler setAuthMode={setAuthMode} />
       </Suspense>
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <div className=" mx-auto px-4 lg:px-7 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-xl">S</span>
             </div>
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+            <span className="opacity-0 md:opacity-100 text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
               StudyAI
             </span>
           </div>
@@ -77,16 +77,13 @@ const Navbar = () => {
         </div>
 
         {/* Actions (Theme & Auth) */}
-        <div className="flex items-center justify-end gap-3">
+        <div className="flex items-center justify-end gap-1.5 sm:gap-3">
           <ThemeToggle />
 
-          {session?.status === "loading" ? (
+          {status === "loading" ? (
             <>
-              <Button
-                variant="ghost"
-                className="h-10 w-26 animate-pulse rounded-md border border-input bg-muted/50 dark:bg-muted/20"></Button>
-
-              <div className="h-10 w-28 animate-pulse rounded-md bg-indigo-100 dark:bg-indigo-950/50" />
+              <div className="h-9 sm:h-10 w-12 sm:w-20 animate-pulse rounded-md border border-input bg-muted/50 dark:bg-muted/20" />
+              <div className="h-9 sm:h-10 w-18 sm:w-26 animate-pulse rounded-md bg-indigo-100 dark:bg-indigo-950/50" />
             </>
           ) : isAuthenticated ? (
             <AvatarDropdown />
