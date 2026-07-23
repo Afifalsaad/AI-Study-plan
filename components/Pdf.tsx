@@ -32,6 +32,14 @@ const Pdf = () => {
     }
 
     if (file && file.type === "application/pdf") {
+      // Client-side file size validation (20MB limit)
+      const maxSize = 20 * 1024 * 1024;
+      if (file.size > maxSize) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+        toast.error(`File too large (${sizeMB} MB). Maximum size is 20MB.`);
+        return;
+      }
+
       setFileName(file.name);
       setIsUploaded(true);
       setLoading(true);
@@ -60,14 +68,13 @@ const Pdf = () => {
             setUploadProgress(percent);
 
             if (percent === 100) {
-              setStatus("Analyzing PDF...");
+              setStatus("Processing PDF...");
             }
           },
         });
 
         setStatus("Generating summary...");
         const { conversationId } = res.data;
-        // console.log("From DB & PDF:", summary, conversationId);
         localStorage.setItem("active_conv_id", conversationId.toString());
         setLoading(false);
         router.push("/summary");
@@ -97,7 +104,7 @@ const Pdf = () => {
         }
       }
     } else {
-      toast.error("Please upload one PDF file");
+      toast.error("Please upload a PDF file");
     }
   };
 
@@ -188,7 +195,7 @@ const Pdf = () => {
                 </p>
                 {!fileName && (
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Supports PDF files up to 10MB
+                    Supports PDF files up to 20MB
                   </p>
                 )}
               </div>

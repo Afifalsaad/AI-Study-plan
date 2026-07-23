@@ -4,10 +4,13 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import authOptions from "@/lib/authOptions";
 
-// Allow up to 60 seconds for Gemini API calls (PDF processing can be slow)
-export const maxDuration = 60;
+// Allow up to 120 seconds for large PDF processing
+export const maxDuration = 120;
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+// Maximum file size: 20MB (Gemini File API supports up to 2GB, but we keep it reasonable)
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,10 +22,26 @@ export async function POST(req: NextRequest) {
         ? Number(userIdValue)
         : null;
 
-    console.log("[PDF Upload] Received file:", file?.name, "size:", file?.size, "userId:", userId);
+    console.log(
+      "[PDF Upload] Received file:",
+      file?.name,
+      "size:",
+      file?.size,
+      "userId:",
+      userId
+    );
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      return NextResponse.json(
+        { error: `File too large (${sizeMB} MB). Maximum size is 20MB.` },
+        { status: 400 }
+      );
     }
 
     if (!process.env.GEMINI_API_KEY) {
@@ -33,26 +52,94 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Convert file to array buffer, then to Buffer and base64 string
+    // Convert file to buffer for upload
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const base64Data = buffer.toString("base64");
 
     const prompt =
       "You are an expert study assistant. Below is the uploaded PDF document. Generate a structured summary including Overview, Key Takeaways, Core Concepts, and Recommended Next Steps in Markdown format. Keep the headings clear and use markdown lists for takeaways and concepts.";
 
-    console.log("[PDF Upload] Calling Gemini API with model: gemini-2.0-flash, base64 length:", base64Data.length);
+    console.log(
+      "[PDF Upload] Uploading file to Gemini File API, size:",
+      file.size
+    );
 
-    // Generate content using Gemini 2.0 Flash
+    // Upload file to Gemini File API
+    // Convert Buffer to Blob for the SDK
+    const blob = new Blob([buffer], { type: "application/pdf" });
+    const uploadedFile = await ai.files.upload({
+      file: blob,
+      config: {
+        mimeType: "application/pdf",
+        displayName: file.name,
+      },
+    });
+
+    if (!uploadedFile.name) {
+      console.error("[PDF Upload] File upload failed - no name returned");
+      return NextResponse.json(
+        { error: "Failed to upload PDF file. Please try again." },
+        { status: 500 }
+      );
+    }
+
+    console.log(
+      "[PDF Upload] File uploaded, URI:",
+      uploadedFile.uri,
+      "Waiting for processing..."
+    );
+
+    // Wait for file to be processed (polling)
+    let fileState = uploadedFile.state;
+    let retries = 0;
+    const maxRetries = 30; // 30 retries * 2s = 60s max wait
+
+    while (fileState === "PROCESSING" && retries < maxRetries) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const fileInfo = await ai.files.get({ name: uploadedFile.name });
+      fileState = fileInfo.state;
+      retries++;
+      console.log(
+        `[PDF Upload] File processing state: ${fileState} (attempt ${retries}/${maxRetries})`
+      );
+    }
+
+    if (fileState === "FAILED") {
+      console.error("[PDF Upload] File processing failed");
+      return NextResponse.json(
+        { error: "Failed to process PDF file. Please try again." },
+        { status: 500 }
+      );
+    }
+
+    if (fileState !== "ACTIVE") {
+      console.error(
+        "[PDF Upload] File processing timed out or unexpected state:",
+        fileState
+      );
+      return NextResponse.json(
+        {
+          error:
+            "PDF processing timed out. Please try again with a smaller file.",
+        },
+        { status: 500 }
+      );
+    }
+
+    console.log(
+      "[PDF Upload] File processed successfully, generating summary..."
+    );
+
+    // Generate content using the uploaded file
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-3.6-flash",
       contents: [
         {
           parts: [
             {
-              inlineData: {
-                data: base64Data,
+              fileData: {
                 mimeType: "application/pdf",
+                fileUri: uploadedFile.uri,
               },
             },
             {
@@ -72,7 +159,12 @@ export async function POST(req: NextRequest) {
       file.size > 1024 * 1024 ? `${fileSizeMB} MB` : `${fileSizeKB} KB`;
     const title = file.name.replace(/\.pdf$/i, "");
 
-    console.log("[PDF Upload] Saving to database, title:", title, "userId:", userId);
+    console.log(
+      "[PDF Upload] Saving to database, title:",
+      title,
+      "userId:",
+      userId
+    );
 
     const newConversation = await prisma.summary.create({
       data: {
@@ -109,7 +201,8 @@ export async function POST(req: NextRequest) {
       console.error("[PDF Upload] Gemini API quota exceeded");
       return NextResponse.json(
         {
-          error: "Gemini API quota exceeded. Please try again later or upgrade your plan.",
+          error:
+            "Gemini API quota exceeded. Please try again later or upgrade your plan.",
           quotaExceeded: true,
         },
         { status: 429 }
