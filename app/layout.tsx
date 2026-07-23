@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import Navbar from "../components/Navbar";
 import { ThemeProvider } from "../components/ThemeProvider";
 import NextAuthProvider from "@/components/providers/NextAuthProviders";
 import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
+import NavbarWrapper from "@/components/NavbarWrapper";
+import { Suspense } from "react";
+import Navbar from "@/components/Navbar";
 
 const inter = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -106,7 +108,7 @@ export default function RootLayout({
                 },
               }}
             />
-            <Navbar></Navbar>
+            <NavbarWrapper />
             {children}
           </ThemeProvider>
         </body>
