@@ -1,10 +1,19 @@
-"use server";
-
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import authOptions from "@/lib/authOptions";
+
+// Required for file uploads on Vercel — disables the default body size limit
+export const config = {
+  api: {
+    bodyParser: false,
+    responseLimit: "20mb",
+  },
+};
+
+// Allow up to 60 seconds for Gemini API calls (PDF processing can be slow)
+export const maxDuration = 60;
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -30,7 +39,7 @@ export async function POST(req: NextRequest) {
     const prompt =
       "You are an expert study assistant. Below is the uploaded PDF document. Generate a structured summary including Overview, Key Takeaways, Core Concepts, and Recommended Next Steps in Markdown format. Keep the headings clear and use markdown lists for takeaways and concepts.";
 
-    // Generate content using Gemini 2.5 Flash
+    // Generate content using Gemini 2.0 Flash
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: [
@@ -84,10 +93,15 @@ export async function GET(req: NextRequest) {
     typeof userIdValue === "string" && userIdValue.trim()
       ? Number(userIdValue)
       : null;
+
+  if (!userId || isNaN(userId)) {
+    return NextResponse.json([]);
+  }
+
   try {
     const summaries = await prisma.summary.findMany({
       where: {
-        userId: userId!,
+        userId: userId,
         ...(search && {
           title: {
             contains: search,

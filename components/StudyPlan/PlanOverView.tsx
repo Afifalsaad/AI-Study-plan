@@ -270,7 +270,7 @@ const StatCard = ({
   );
 };
 
-export default function PlanOverview() {
+export default function PlanOverView() {
   const [plan, setPlan] = useState<StudyPlanData | null>(null);
   const [loading, setLoading] = useState(true);
 

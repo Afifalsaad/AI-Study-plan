@@ -176,7 +176,6 @@ export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
-    console.log("user ID", userId);
 
     const res = await prisma.studyPlan.findMany({
       where: {
@@ -191,6 +190,10 @@ export async function GET(req: NextRequest) {
       data: res,
     });
   } catch (error) {
-    console.log(error);
+    console.log("Error fetching study plan:", error);
+    return NextResponse.json({
+      success: false,
+      data: [],
+    });
   }
 }
