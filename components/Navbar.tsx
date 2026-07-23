@@ -41,7 +41,7 @@ const Navbar = () => {
   const [authMode, setAuthMode] = useState<"login" | "register" | null>(null);
 
   const navLinks = [
-    { name: "Summary", href: "/Summary" },
+    { name: "Summary", href: "/summary" },
     { name: "Overview", href: "/overview" },
     { name: "How it works", href: "/#how-it-works" },
   ];
