@@ -36,8 +36,15 @@ function AuthRedirectHandler({
 const Navbar = () => {
   const { status } = useSession();
   const isAuthenticated = status === "authenticated";
+  const pathname = usePathname();
 
   const [authMode, setAuthMode] = useState<"login" | "register" | null>(null);
+
+  const navLinks = [
+    { name: "Summary", href: "/Summary" },
+    { name: "Overview", href: "/overview" },
+    { name: "How it works", href: "/#how-it-works" },
+  ];
 
   return (
     <nav className="border-b border-border bg-white/80 dark:bg-slate-950 backdrop-blur-md sticky top-0 z-50 transition-colors duration-700 ease-in-out">
@@ -58,22 +65,22 @@ const Navbar = () => {
         </Link>
 
         {/* Navigation Links */}
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600 dark:text-gray-300">
-          <Link
-            href="/Summary"
-            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-            Summary
-          </Link>
-          <Link
-            href="/overview"
-            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-            Overview
-          </Link>
-          <Link
-            href="#how-it-works"
-            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-            How it works
-          </Link>
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={
+                  isActive
+                    ? "text-indigo-600 dark:text-indigo-400 transition-colors"
+                    : "text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                }>
+                {link.name}
+              </Link>
+            );
+          })}
         </div>
 
         {/* Actions (Theme & Auth) */}

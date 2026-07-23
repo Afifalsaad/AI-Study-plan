@@ -1,4 +1,9 @@
+import type { Metadata } from "next";
 import SummaryWrapper from "@/components/Summary/SummaryWrapper";
+
+export const metadata: Metadata = {
+  title: "Summary",
+};
 
 export default function SummaryPage() {
   return (

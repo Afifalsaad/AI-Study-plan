@@ -1,5 +1,9 @@
+import type { Metadata } from "next";
 import StudyInput from '@/components/StudyPlan/StudyInput';
-import React from 'react';
+
+export const metadata: Metadata = {
+  title: "Study Plan",
+};
 
 const page = () => {
     return (

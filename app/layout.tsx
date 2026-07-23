@@ -20,7 +20,10 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "StudyAI - AI-Powered Study Assistant",
+  title: {
+    default: "StudyAI - AI-Powered Study Assistant",
+    template: "%s | StudyAI",
+  },
   description:
     "Make your study smarter and easier with an AI assistant. Summaries, flashcards, study plans, and much more.",
 };
