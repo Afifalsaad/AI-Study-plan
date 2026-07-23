@@ -12,12 +12,14 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const file = formData.get("file") as File;
+    const file = formData.get("file") as File | null;
     const userIdValue = formData.get("userId");
     const userId =
       typeof userIdValue === "string" && userIdValue.trim()
         ? Number(userIdValue)
         : null;
+
+    console.log("[PDF Upload] Received file:", file?.name, "size:", file?.size, "userId:", userId);
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -30,6 +32,8 @@ export async function POST(req: NextRequest) {
 
     const prompt =
       "You are an expert study assistant. Below is the uploaded PDF document. Generate a structured summary including Overview, Key Takeaways, Core Concepts, and Recommended Next Steps in Markdown format. Keep the headings clear and use markdown lists for takeaways and concepts.";
+
+    console.log("[PDF Upload] Calling Gemini API with model: gemini-2.5-flash, base64 length:", base64Data.length);
 
     // Generate content using Gemini 2.0 Flash
     const response = await ai.models.generateContent({
@@ -45,6 +49,7 @@ export async function POST(req: NextRequest) {
       ],
     });
 
+    console.log("[PDF Upload] Gemini API response received");
     const summaryText = response.text || "Failed to generate summary.";
 
     const fileSizeKB = (file.size / 1024).toFixed(1);
@@ -52,6 +57,8 @@ export async function POST(req: NextRequest) {
     const fileSizeStr =
       file.size > 1024 * 1024 ? `${fileSizeMB} MB` : `${fileSizeKB} KB`;
     const title = file.name.replace(/\.pdf$/i, "");
+
+    console.log("[PDF Upload] Saving to database, title:", title, "userId:", userId);
 
     const newConversation = await prisma.summary.create({
       data: {
@@ -64,15 +71,20 @@ export async function POST(req: NextRequest) {
     });
     const newConvId = newConversation.id;
 
+    console.log("[PDF Upload] Success, conversationId:", newConvId);
+
     return NextResponse.json({
       success: true,
       conversationId: newConvId,
       summary: summaryText,
     });
   } catch (error: unknown) {
-    console.error("Error summarizing PDF:", error);
+    console.error("[PDF Upload] Error summarizing PDF:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Failed to summarize PDF";
+    if (error instanceof Error && error.stack) {
+      console.error("[PDF Upload] Error stack:", error.stack);
+    }
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
