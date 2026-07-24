@@ -16,8 +16,16 @@ const extractTextFromPdf = async (file: File): Promise<string> => {
       const script = document.createElement("script");
       script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js";
       script.onload = () => {
-        (window as { pdfjsLib?: typeof import("pdfjs-dist") }).pdfjsLib!.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
-        resolve(true);
+        try {
+          // Use Blob URL workaround to load worker cross-origin in Safari/iOS
+          const workerCode = `importScripts("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js");`;
+          const blob = new Blob([workerCode], { type: "application/javascript" });
+          const workerUrl = URL.createObjectURL(blob);
+          (window as { pdfjsLib?: typeof import("pdfjs-dist") }).pdfjsLib!.GlobalWorkerOptions.workerSrc = workerUrl;
+          resolve(true);
+        } catch (e) {
+          reject(e);
+        }
       };
       script.onerror = reject;
       document.head.appendChild(script);
@@ -63,7 +71,8 @@ const Pdf = () => {
       return;
     }
 
-    if (file && file.type === "application/pdf") {
+    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+    if (file && isPdf) {
       // Client-side file size validation (20MB limit)
       const maxSize = 20 * 1024 * 1024;
       if (file.size > maxSize) {
