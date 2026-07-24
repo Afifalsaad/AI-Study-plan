@@ -48,6 +48,29 @@ async function retryWithBackoff<T>(
 
 export async function POST(req: NextRequest) {
   try {
+    // Validate critical environment variables
+    const missingEnvVars: string[] = [];
+    if (!process.env.GEMINI_API_KEY) {
+      missingEnvVars.push("GEMINI_API_KEY");
+    }
+    if (!process.env.DATABASE_URL) {
+      missingEnvVars.push("DATABASE_URL");
+    }
+
+    if (missingEnvVars.length > 0) {
+      console.error(
+        "[PDF Upload] Missing environment variables:",
+        missingEnvVars.join(", ")
+      );
+      return NextResponse.json(
+        {
+          error: `Server configuration error: Missing environment variables: ${missingEnvVars.join(", ")}. Please check Netlify environment variables.`,
+          missingVars: missingEnvVars,
+        },
+        { status: 500 }
+      );
+    }
+
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
     const userIdValue = formData.get("userId");
@@ -75,14 +98,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: `File too large (${sizeMB} MB). Maximum size is 20MB.` },
         { status: 400 }
-      );
-    }
-
-    if (!process.env.GEMINI_API_KEY) {
-      console.error("[PDF Upload] GEMINI_API_KEY is not set");
-      return NextResponse.json(
-        { error: "GEMINI_API_KEY is not configured on the server" },
-        { status: 500 }
       );
     }
 
@@ -227,8 +242,26 @@ export async function POST(req: NextRequest) {
     });
   } catch (error: unknown) {
     console.error("[PDF Upload] Error summarizing PDF:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Failed to summarize PDF";
+
+    // Extract detailed error information
+    let errorMessage = "Failed to summarize PDF";
+    let errorName = "UnknownError";
+    let errorStack: string | undefined;
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      errorName = error.name;
+      errorStack = error.stack;
+
+      // Check for specific error types
+      if (error.message.includes("ECONNRESET") || error.message.includes("ETIMEDOUT")) {
+        errorMessage = "Network error: Connection to Gemini API failed. Please try again.";
+      } else if (error.message.includes("ENOTFOUND")) {
+        errorMessage = "Network error: Could not resolve Gemini API host. Please check your network.";
+      } else if (error.message.includes("prisma") || error.message.includes("database")) {
+        errorMessage = "Database error: Could not save summary. Please check database connection.";
+      }
+    }
 
     // Check if it's a quota/rate-limit error from Gemini
     const isQuotaError =
@@ -250,14 +283,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (error instanceof Error && error.stack) {
-      console.error("[PDF Upload] Error stack:", error.stack);
-    }
+    console.error("[PDF Upload] Error details:", {
+      name: errorName,
+      message: errorMessage,
+      stack: errorStack,
+    });
+
     return NextResponse.json(
       {
         error: errorMessage,
-        stack: error instanceof Error ? error.stack : undefined,
-        name: error instanceof Error ? error.name : undefined,
+        name: errorName,
+        stack: errorStack,
       },
       { status: 500 }
     );
