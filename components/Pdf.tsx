@@ -109,6 +109,7 @@ const Pdf = () => {
 
         // Extract text in client side to bypass serverless payload limits and mobile upload issues
         setStatus("Extracting text from PDF...");
+
         try {
           const extractedText = await extractTextFromPdf(file);
           formData.append("text", extractedText);
@@ -116,7 +117,10 @@ const Pdf = () => {
           formData.append("fileSize", file.size.toString());
           setUploadProgress(50);
         } catch (err) {
-          console.error("Client-side PDF extraction failed, falling back to direct upload", err);
+          console.error(
+            "Client-side PDF extraction failed, falling back to direct upload",
+            err
+          );
           // formData.append("file", file);
         }
 
@@ -239,7 +243,7 @@ const Pdf = () => {
                 : "border-white dark:border-gray-800 dark:shadow-indigo-500/10"
             }`}>
           {loading ? (
-            <Field className="w-full max-w-sm">
+            <Field className="w-full max-w-sm px-6 text-indigo-900 dark:text-indigo-200">
               <FieldLabel htmlFor="progress-upload">
                 <span>{status}</span>
                 <span className="ml-auto">{uploadProgress}%</span>
