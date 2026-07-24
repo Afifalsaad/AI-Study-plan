@@ -11,17 +11,25 @@ import RegisterForm from "./RegisterForm";
 import toast from "react-hot-toast";
 
 const extractTextFromPdf = async (file: File): Promise<string> => {
-  if (typeof window !== "undefined" && !(window as { pdfjsLib?: typeof import("pdfjs-dist") }).pdfjsLib) {
+  if (
+    typeof window !== "undefined" &&
+    !(window as { pdfjsLib?: typeof import("pdfjs-dist") }).pdfjsLib
+  ) {
     await new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js";
+      script.src =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js";
       script.onload = () => {
         try {
           // Use Blob URL workaround to load worker cross-origin in Safari/iOS
           const workerCode = `importScripts("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js");`;
-          const blob = new Blob([workerCode], { type: "application/javascript" });
+          const blob = new Blob([workerCode], {
+            type: "application/javascript",
+          });
           const workerUrl = URL.createObjectURL(blob);
-          (window as { pdfjsLib?: typeof import("pdfjs-dist") }).pdfjsLib!.GlobalWorkerOptions.workerSrc = workerUrl;
+          (
+            window as { pdfjsLib?: typeof import("pdfjs-dist") }
+          ).pdfjsLib!.GlobalWorkerOptions.workerSrc = workerUrl;
           resolve(true);
         } catch (e) {
           reject(e);
@@ -32,7 +40,8 @@ const extractTextFromPdf = async (file: File): Promise<string> => {
     });
   }
 
-  const pdfjsLib = (window as { pdfjsLib?: typeof import("pdfjs-dist") }).pdfjsLib;
+  const pdfjsLib = (window as { pdfjsLib?: typeof import("pdfjs-dist") })
+    .pdfjsLib;
   const arrayBuffer = await file.arrayBuffer();
   if (!pdfjsLib) {
     throw new Error("Failed to load pdfjsLib.");
@@ -71,7 +80,9 @@ const Pdf = () => {
       return;
     }
 
-    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+    const isPdf =
+      file.type === "application/pdf" ||
+      file.name.toLowerCase().endsWith(".pdf");
     if (file && isPdf) {
       // Client-side file size validation (20MB limit)
       const maxSize = 20 * 1024 * 1024;
@@ -96,21 +107,17 @@ const Pdf = () => {
         const formData = new FormData();
         formData.append("userId", session?.data?.user?.id || "");
 
-        // If file is > 4MB, extract text in client side to bypass serverless payload limits
-        if (file.size > 4 * 1024 * 1024) {
-          setStatus("Extracting text from PDF (large file)...");
-          try {
-            const extractedText = await extractTextFromPdf(file);
-            formData.append("text", extractedText);
-            formData.append("fileName", file.name);
-            formData.append("fileSize", file.size.toString());
-            setUploadProgress(50);
-          } catch (err) {
-            toast.error(`Client-side PDF extraction failed, falling back to direct upload: ${err instanceof Error ? err.message : "Unknown error"}`);
-            formData.append("file", file);
-          }
-        } else {
-          formData.append("file", file);
+        // Extract text in client side to bypass serverless payload limits and mobile upload issues
+        setStatus("Extracting text from PDF...");
+        try {
+          const extractedText = await extractTextFromPdf(file);
+          formData.append("text", extractedText);
+          formData.append("fileName", file.name);
+          formData.append("fileSize", file.size.toString());
+          setUploadProgress(50);
+        } catch (err) {
+          console.error("Client-side PDF extraction failed, falling back to direct upload", err);
+          // formData.append("file", file);
         }
 
         setStatus("Sending to server...");

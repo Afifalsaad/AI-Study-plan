@@ -156,7 +156,7 @@ const RegisterForm = ({
   return (
     <div>
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="sm:max-w-sm bg-accent">
           <form onSubmit={handleRegister}>
             <DialogHeader className="text-center">
               <DialogTitle>Sign Up!</DialogTitle>

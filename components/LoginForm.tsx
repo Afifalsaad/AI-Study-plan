@@ -114,7 +114,7 @@ const LoginForm = ({
   return (
     <div>
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-sm gap-10">
+        <DialogContent className="sm:max-w-sm gap-10 bg-accent">
           <form onSubmit={handleLogin}>
             <DialogHeader className="text-center">
               <DialogTitle>Log In</DialogTitle>
