@@ -13,14 +13,12 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   try {
     const formData = await req.formData();
-
-    const file = formData.get("syllabusPdf") as File;
-
-    // convert PDF to texts
+    const file = formData.get("syllabusPdf") as File | null;
+    const syllabusText = formData.get("syllabusText") as string | null;
 
     let base64Data = "";
 
-    if (file && file.size > 0) {
+    if (!syllabusText && file && file.size > 0) {
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
       base64Data = buffer.toString("base64");
@@ -110,7 +108,11 @@ Important:
       },
     ];
 
-    if (base64Data) {
+    if (syllabusText) {
+      contents.push({
+        text: `Here is the syllabus text extracted from the PDF:\n\n${syllabusText}`,
+      });
+    } else if (base64Data) {
       contents.push({
         inlineData: {
           mimeType: "application/pdf",

@@ -10,6 +10,38 @@ import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import toast from "react-hot-toast";
 
+const extractTextFromPdf = async (file: File): Promise<string> => {
+  if (typeof window !== "undefined" && !(window as { pdfjsLib?: typeof import("pdfjs-dist") }).pdfjsLib) {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js";
+      script.onload = () => {
+        (window as { pdfjsLib?: typeof import("pdfjs-dist") }).pdfjsLib!.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
+        resolve(true);
+      };
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  const pdfjsLib = (window as { pdfjsLib?: typeof import("pdfjs-dist") }).pdfjsLib;
+  const arrayBuffer = await file.arrayBuffer();
+  if (!pdfjsLib) {
+    throw new Error("Failed to load pdfjsLib.");
+  }
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let fullText = "";
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const textContent = await page.getTextContent();
+    const pageText = textContent.items
+      .map((item) => ("str" in item ? item.str : ""))
+      .join(" ");
+    fullText += pageText + "\n";
+  }
+  return fullText;
+};
+
 const Pdf = () => {
   const [fileName, setFileName] = useState<string | null>(null);
   const [isUploaded, setIsUploaded] = useState<boolean | null>(false);
@@ -44,7 +76,7 @@ const Pdf = () => {
       setIsUploaded(true);
       setLoading(true);
       setUploadProgress(0);
-      setStatus("Uploading PDF...");
+      setStatus("Preparing upload...");
 
       if (!user) {
         setIsOpen(true);
@@ -53,9 +85,26 @@ const Pdf = () => {
 
       try {
         const formData = new FormData();
-        formData.append("file", file);
         formData.append("userId", session?.data?.user?.id || "");
 
+        // If file is > 4MB, extract text in client side to bypass serverless payload limits
+        if (file.size > 4 * 1024 * 1024) {
+          setStatus("Extracting text from PDF (large file)...");
+          try {
+            const extractedText = await extractTextFromPdf(file);
+            formData.append("text", extractedText);
+            formData.append("fileName", file.name);
+            formData.append("fileSize", file.size.toString());
+            setUploadProgress(50);
+          } catch (err) {
+            toast.error(`Client-side PDF extraction failed, falling back to direct upload: ${err instanceof Error ? err.message : "Unknown error"}`);
+            formData.append("file", file);
+          }
+        } else {
+          formData.append("file", file);
+        }
+
+        setStatus("Sending to server...");
         const res = await axios.post("/api/summarize", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -68,7 +117,7 @@ const Pdf = () => {
             setUploadProgress(percent);
 
             if (percent === 100) {
-              setStatus("Processing PDF...");
+              setStatus("Processing on server...");
             }
           },
         });

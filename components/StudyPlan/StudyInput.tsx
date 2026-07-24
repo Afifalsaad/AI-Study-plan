@@ -41,6 +41,41 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
+const extractTextFromPdf = async (file: File): Promise<string> => {
+  interface PdfJsLib {
+    GlobalWorkerOptions: { workerSrc: string };
+    getDocument: (params: { data: ArrayBuffer }) => { promise: Promise<{ numPages: number; getPage: (pageNumber: number) => Promise<{ getTextContent: () => Promise<{ items: { str: string }[] }> }> }> };
+  }
+
+  if (typeof window !== "undefined" && !(window as { pdfjsLib?: PdfJsLib }).pdfjsLib) {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js";
+      script.onload = () => {
+        ((window as unknown) as { pdfjsLib: PdfJsLib }).pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
+        resolve(true);
+      };
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  const pdfjsLib = (window as { pdfjsLib?: PdfJsLib }).pdfjsLib;
+  const arrayBuffer = await file.arrayBuffer();
+  if (!pdfjsLib) {
+    throw new Error("pdfjsLib is not loaded or undefined.");
+  }
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let fullText = "";
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const textContent = await page.getTextContent();
+    const pageText = textContent.items.map((item: { str: string }) => item.str).join(" ");
+    fullText += pageText + "\n";
+  }
+  return fullText;
+};
+
 interface FormData {
   syllabusPdf: File | null;
   name: string;
@@ -93,12 +128,34 @@ const StudyInput = () => {
     try {
       setLoading(true);
       setOpen(false);
-      await axios.post("api/study_plan", formData, {
+
+      const dataToSend = new FormData();
+      dataToSend.append("name", formData.name);
+      dataToSend.append("examName", formData.examName);
+      dataToSend.append("examDate", formData.examDate);
+      dataToSend.append("dailyTime", formData.dailyTime);
+      dataToSend.append("level", formData.level);
+      dataToSend.append("subjects", formData.subjects);
+      dataToSend.append("weakTopics", formData.weakTopics);
+      dataToSend.append("syllabus", formData.syllabus);
+      dataToSend.append("goal", formData.goal);
+      dataToSend.append("userId", String(formData.userId || userId || ""));
+
+      if (formData.syllabusPdf) {
+        try {
+          const text = await extractTextFromPdf(formData.syllabusPdf);
+          dataToSend.append("syllabusText", text);
+        } catch (err) {
+          console.error("Failed to parse syllabus PDF on client, sending as file", err);
+          dataToSend.append("syllabusPdf", formData.syllabusPdf);
+        }
+      }
+
+      await axios.post("/api/study_plan", dataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      // console.log(res?.data, res);
       router.push("/overview");
     } catch (error) {
       console.log(error);
